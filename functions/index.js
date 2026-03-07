@@ -28,12 +28,25 @@ async function backfillUsersToBronzeDefaults() {
   for (const doc of snapshot.docs) {
     const data = doc.data() || {};
     const updates = {};
+    const score = typeof data.score === 'number' ? data.score : 0;
+    const hasNumericLeagueXp = typeof data.leagueXp === 'number';
+    const isMigrated = data.leagueXpMigratedFromScore === true;
 
     if (!data.league || !LEAGUES.includes(data.league)) {
       updates.league = 'bronze';
       updates.leagueJoinedAt = admin.firestore.FieldValue.serverTimestamp();
     }
-    if (typeof data.leagueXp !== 'number') {
+
+    if (!isMigrated) {
+      if (!hasNumericLeagueXp) {
+        updates.leagueXp = score;
+      } else if (data.leagueXp === 0 && score > 0) {
+        // Legacy users who were defaulted to 0 get a one-time restore from total score.
+        updates.leagueXp = score;
+      }
+      updates.leagueXpMigratedFromScore = true;
+    } else if (!hasNumericLeagueXp) {
+      // Keep schema consistent even after migration.
       updates.leagueXp = 0;
     }
 

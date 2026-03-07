@@ -93,6 +93,13 @@ class GameProvider extends ChangeNotifier {
 
     final data = snapshot.data() ?? <String, dynamic>{};
     final now = DateTime.now();
+    final score = _readInt(data, 'score', 0);
+    final hasLeagueXp = data['leagueXp'] is num;
+    final leagueXp = _readInt(data, 'leagueXp', 0);
+    final leagueXpMigrated = data['leagueXpMigratedFromScore'] as bool? ?? false;
+    final initialLeagueXp = !leagueXpMigrated && score > 0 && (!hasLeagueXp || leagueXp == 0)
+        ? score
+        : leagueXp;
 
     final defaults = <String, dynamic>{
       'gems': _readInt(data, 'gems', 0),
@@ -101,7 +108,8 @@ class GameProvider extends ChangeNotifier {
       'streakFreezes': _readInt(data, 'streakFreezes', 0),
       'streakFreezeActive': data['streakFreezeActive'] as bool? ?? false,
       'league': data['league'] as String? ?? bronzeLeague,
-      'leagueXp': _readInt(data, 'leagueXp', 0),
+      'leagueXp': initialLeagueXp,
+      'leagueXpMigratedFromScore': true,
       'leagueJoinedAt': data['leagueJoinedAt'] ?? FieldValue.serverTimestamp(),
       'achievements':
           (data['achievements'] as List<dynamic>?)?.whereType<String>().toList() ??

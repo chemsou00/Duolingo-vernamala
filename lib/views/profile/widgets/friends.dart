@@ -42,25 +42,40 @@ class SocialFriends extends StatelessWidget {
               borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
               border: Border.all(color: const Color(0xFFEEF2F1)),
             ),
-            child: ContainedTabBarView(
-              tabBarProperties: const TabBarProperties(
-                indicatorColor: VarnamalaTheme.peacockTeal,
-                indicatorWeight: 3,
-                labelColor: VarnamalaTheme.peacockTeal,
-                unselectedLabelColor: VarnamalaTheme.textHint,
-              ),
-              tabs: const [
-                _TabLabel(text: 'FOLLOWING'),
-                _TabLabel(text: 'FOLLOWERS'),
-              ],
-              views: [
-                PaginatedFollowingList(
-                  userId: FirebaseAuth.instance.currentUser!.uid,
-                ),
-                PaginatedFollowersList(
-                  userId: FirebaseAuth.instance.currentUser!.uid,
-                ),
-              ],
+            child: StreamBuilder<User?>(
+              stream: FirebaseAuth.instance.authStateChanges(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(
+                      color: VarnamalaTheme.peacockTeal,
+                    ),
+                  );
+                }
+                
+                final user = snapshot.data;
+                
+                if (user == null) {
+                  return const Center(child: Text('Please sign in to view friends'));
+                }
+
+                return ContainedTabBarView(
+                  tabBarProperties: const TabBarProperties(
+                    indicatorColor: VarnamalaTheme.peacockTeal,
+                    indicatorWeight: 3,
+                    labelColor: VarnamalaTheme.peacockTeal,
+                    unselectedLabelColor: VarnamalaTheme.textHint,
+                  ),
+                  tabs: const [
+                    _TabLabel(text: 'FOLLOWING'),
+                    _TabLabel(text: 'FOLLOWERS'),
+                  ],
+                  views: [
+                    PaginatedFollowingList(userId: user.uid),
+                    PaginatedFollowersList(userId: user.uid),
+                  ],
+                );
+              },
             ),
           ),
         ],

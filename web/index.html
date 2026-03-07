@@ -6,7 +6,7 @@
 
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A personal app to teach oneself Kannada, Duolingo style.">
+  <meta name="description" content="Reclaiming language learning. No hearts, no energy, just pure open-source education for Indian and underrepresented languages.">
 
   <!-- iOS meta tags & icons -->
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -18,8 +18,45 @@
   <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>Varnamala</title>
+  <title>Varnamala | Reclaiming Language Learning</title>
   <link rel="manifest" href="manifest.json">
+
+  <style>
+    body {
+      background-color: #F5FDFB; /* Scaffold background */
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    }
+    .loading {
+      text-align: center;
+      color: #1F727E; /* Peacock Teal */
+    }
+    .spinner {
+      border: 4px solid #E5E5E5;
+      border-radius: 50%;
+      border-top: 4px solid #1F727E;
+      width: 40px;
+      height: 40px;
+      -webkit-animation: spin 1s linear infinite; /* Safari */
+      animation: spin 1s linear infinite;
+      margin: 0 auto 20px auto;
+    }
+    /* Safari */
+    @-webkit-keyframes spin {
+      0% { -webkit-transform: rotate(0deg); }
+      100% { -webkit-transform: rotate(360deg); }
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    h1 { margin: 0; font-size: 24px; color: #1F727E; }
+    p { margin-top: 10px; color: #4A5568; }
+  </style>
 
   <script>
     // The value below is injected by flutter build, do not touch.
@@ -29,6 +66,12 @@
   <script src="flutter.js" defer></script>
 </head>
 <body>
+  <div class="loading">
+    <div class="spinner"></div>
+    <h1>Varnamala</h1>
+    <p>Reclaiming Language Learning...</p>
+  </div>
+
   <script>
     window.addEventListener('load', function(ev) {
       // Download main.dart.js

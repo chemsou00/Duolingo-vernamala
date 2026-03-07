@@ -43,6 +43,9 @@ class FriendSuggestions extends StatelessWidget {
                     child: CircularProgressIndicator(
                         color: VarnamalaTheme.peacockTeal, strokeWidth: 3));
               }
+
+              final currentUser = FirebaseAuth.instance.currentUser;
+
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                 return Center(
                   child: Text('No suggestions yet',

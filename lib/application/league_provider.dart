@@ -70,7 +70,7 @@ class LeagueProvider extends ChangeNotifier {
       }).toList();
 
       users.sort((a, b) {
-        final byLeagueXp = b.leagueXp.compareTo(a.leagueXp);
+        final byLeagueXp = b.effectiveLeagueXp.compareTo(a.effectiveLeagueXp);
         if (byLeagueXp != 0) return byLeagueXp;
         return b.score.compareTo(a.score);
       });

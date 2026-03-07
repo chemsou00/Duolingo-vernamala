@@ -19,13 +19,12 @@ enum GemEvent {
   const GemEvent(this.amount);
 }
 
-enum GemPurchase {
-  streakFreeze(200),
-  heartRefill(350),
-  doubleXp(100);
+enum CommunityAction {
+  follow(40),
+  validatedShare(75);
 
-  final int cost;
-  const GemPurchase(this.cost);
+  final int reward;
+  const CommunityAction(this.reward);
 }
 
 @injectable
@@ -66,7 +65,7 @@ class GemsProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> spendGems(GemPurchase purchase) async {
+  Future<bool> claimCommunityReward(CommunityAction action) async {
     final userId = _auth.currentUser?.uid;
     if (userId == null) return false;
 
@@ -78,26 +77,23 @@ class GemsProvider extends ChangeNotifier {
 
       final data = doc.data() ?? <String, dynamic>{};
       final gems = _readInt(data['gems'], 0);
-      if (gems < purchase.cost) return false;
+      final updates = <String, dynamic>{};
 
-      final updates = <String, dynamic>{'gems': gems - purchase.cost};
-
-      switch (purchase) {
-        case GemPurchase.streakFreeze:
-          final streakFreezes = _readInt(data['streakFreezes'], 0);
-          if (streakFreezes >= 2) return false;
-          updates['streakFreezes'] = streakFreezes + 1;
+      switch (action) {
+        case CommunityAction.follow:
+          final followRewardClaimed = data['followRewardClaimed'] as bool? ?? false;
+          if (followRewardClaimed) return false;
+          updates['followRewardClaimed'] = true;
           break;
-        case GemPurchase.heartRefill:
-          updates['hearts'] = 5;
-          updates['heartsRefillAt'] = null;
-          break;
-        case GemPurchase.doubleXp:
-          updates['doubleXpUntil'] =
-              Timestamp.fromDate(DateTime.now().add(const Duration(minutes: 30)));
+        case CommunityAction.validatedShare:
+          final validatedShareCount = _readInt(data['validatedShareCount'], 0);
+          final claimedShareCount = _readInt(data['claimedShareCount'], 0);
+          if (validatedShareCount <= claimedShareCount) return false;
+          updates['claimedShareCount'] = claimedShareCount + 1;
           break;
       }
 
+      updates['gems'] = gems + action.reward;
       transaction.update(docRef, updates);
       return true;
     });

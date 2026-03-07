@@ -343,7 +343,7 @@ class _LeaderboardTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(VarnamalaTheme.radiusRound),
             ),
             child: Text(
-              '${user.leagueXp} XP',
+              '${user.effectiveLeagueXp} XP',
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

@@ -206,6 +206,13 @@ class _GetStartedButtonState extends State<GetStartedButton> {
           'lessonsCompleted': 0,
           'perfectLessons': 0,
           'streakWasBroken': false,
+          'streakRepairRequired': false,
+          'streakRepairProgress': 0,
+          'streakRepairTarget': 100,
+          'streakBeforeBreak': 0,
+          'followRewardClaimed': false,
+          'validatedShareCount': 0,
+          'claimedShareCount': 0,
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });

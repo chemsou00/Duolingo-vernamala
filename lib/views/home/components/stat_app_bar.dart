@@ -17,6 +17,7 @@ import 'package:words625/views/theme.dart';
 import 'package:words625/views/widgets/gems_display.dart';
 import 'package:words625/views/widgets/hearts_display.dart';
 import 'package:words625/views/widgets/loader.dart';
+import 'package:words625/views/widgets/patreon_button.dart';
 
 class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
   const StatAppBar({Key? key}) : super(key: key);
@@ -29,17 +30,21 @@ class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       toolbarHeight: 60,
       leading: const LanguageSelector(),
-      title: const Row(
-        children: [
-          Padding(padding: EdgeInsets.all(16)),
-          ScoreCard(),
-          Padding(padding: EdgeInsets.all(12)),
-          Streak(),
-          Padding(padding: EdgeInsets.all(6)),
-          GemsDisplay(),
-        ],
+      title: const SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ScoreCard(), // Removed initial padding
+            Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
+            Streak(),
+            Padding(padding: EdgeInsets.symmetric(horizontal: 4)),
+            GemsDisplay(),
+          ],
+        ),
       ),
       actions: const [
+        PatreonButton(),
         HeartsDisplay(),
       ],
     );

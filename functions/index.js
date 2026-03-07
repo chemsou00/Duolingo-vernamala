@@ -31,6 +31,7 @@ async function backfillUsersToBronzeDefaults() {
     const score = typeof data.score === 'number' ? data.score : 0;
     const hasNumericLeagueXp = typeof data.leagueXp === 'number';
     const isMigrated = data.leagueXpMigratedFromScore === true;
+    const isSeeded = data.leagueXpSeededFromScore === true;
 
     if (!data.league || !LEAGUES.includes(data.league)) {
       updates.league = 'bronze';
@@ -45,9 +46,16 @@ async function backfillUsersToBronzeDefaults() {
         updates.leagueXp = score;
       }
       updates.leagueXpMigratedFromScore = true;
+      updates.leagueXpSeededFromScore = true;
     } else if (!hasNumericLeagueXp) {
       // Keep schema consistent even after migration.
       updates.leagueXp = 0;
+    }
+
+    if (isMigrated && !isSeeded && hasNumericLeagueXp && data.leagueXp === 0 && score > 0) {
+      // Recovery path for users who were marked migrated before restore logic existed.
+      updates.leagueXp = score;
+      updates.leagueXpSeededFromScore = true;
     }
 
     if (Object.keys(updates).length > 0) {

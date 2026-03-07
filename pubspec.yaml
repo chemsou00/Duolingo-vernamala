@@ -40,6 +40,7 @@ dependencies:
   pulsator: any
   shimmer: any
   streaming_shared_preferences: any
+  url_launcher: ^6.3.2
 dev_dependencies:
   auto_route_generator: any
   build_runner: any

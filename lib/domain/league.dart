@@ -29,6 +29,13 @@ class LeaderboardEntry {
     required this.languages,
   });
 
+  int get effectiveLeagueXp {
+    if (leagueXp == 0 && score > 0) {
+      return score;
+    }
+    return leagueXp;
+  }
+
   factory LeaderboardEntry.fromMap(String userId, Map<String, dynamic> map) {
     return LeaderboardEntry(
       userId: userId,

@@ -68,7 +68,7 @@ We are building a modular system where **anyone** can contribute a course file t
 
 1. **Clone the repository:**
    ```bash
-   git clone https://github.com/rshrc/Words625
+   git clone https://github.com/rshrc/Varnamala
    ```
 2. **Install dependencies:**
    ```bash
@@ -89,9 +89,13 @@ We are building a modular system where **anyone** can contribute a course file t
 
 ### Screenshots
 
-| Home | Lessons | Profile |
-|------|---------|---------|
-| ![Home](screenshot_0.png) | ![Lesson](screenshot_1.png) | ![Profile](screenshot_3.png) |
+| Home | Lesson | Profile | Alphabets |
+|:---:|:---:|:---:|:---:|
+| ![Home](screenshots/screenshot0.png) | ![Lesson](screenshots/screenshot1.png) | ![Profile](screenshots/screenshot2.png) | ![Alphabets](screenshots/screenshot3.png) |
+
+| Writing | Socials | Leagues and Leaderboard | Games |
+|:---:|:---:|:---:|:---:|
+| ![Writing](screenshots/screenshot4.png) | ![Socials](screenshots/screenshot5.png) | ![Leagues and Leaderboard](screenshots/screenshot6.png) | ![Games](screenshots/screenshot7.png) |
 
 ---
 

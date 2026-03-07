@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:auto_route/auto_route.dart';
+import 'package:words625/views/theme.dart';
+import 'components/splash_background_painter.dart';
 
 // Project imports:
 import 'package:words625/di/injection.dart';
@@ -39,21 +41,32 @@ class _SplashPageState extends State<SplashPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Column(
-          children: [
-            const Expanded(child: CenterDisplay()),
-            Center(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  GetStartedButton(context),
-                  const SizedBox(height: 16),
-                ],
-              ),
+      backgroundColor: Colors.white,
+      body: Stack(
+        children: [
+          // Background with warm curved layers
+          CustomPaint(
+            painter: SplashBackgroundPainter(),
+            size: Size.infinite,
+          ),
+          
+          SafeArea(
+            child: Column(
+              children: [
+                const Expanded(child: CenterDisplay()),
+                Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      GetStartedButton(context),
+                      const SizedBox(height: 16),
+                    ],
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

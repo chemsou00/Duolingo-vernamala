@@ -7,16 +7,11 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:animated_text_kit/animated_text_kit.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 // Project imports:
 import 'package:words625/views/home/mala_welcomes.dart';
 import 'package:words625/views/theme.dart';
-
-const centerTextStyle = TextStyle(
-  fontSize: 32,
-  fontWeight: FontWeight.bold,
-  color: primaryColor,
-);
 
 class CenterDisplay extends StatelessWidget {
   const CenterDisplay({Key? key}) : super(key: key);
@@ -28,74 +23,89 @@ class CenterDisplay extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           const MalaWelcomes(),
-          Container(padding: const EdgeInsets.all(5)),
-          AnimatedTextKit(
-            animatedTexts: [
-              TypewriterAnimatedText(
-                'Varnamala',
-                speed: const Duration(milliseconds: 100),
-                textStyle: centerTextStyle,
-                cursor: "",
-              ),
-              TypewriterAnimatedText(
-                'Learn Kannada',
-                speed: const Duration(milliseconds: 100),
-                textStyle: centerTextStyle,
-              ),
-              TypewriterAnimatedText(
-                'ಕನ್ನಡ ಕಲಿಯಿರಿ',
-                speed: const Duration(milliseconds: 200),
-                textStyle: centerTextStyle,
-                cursor: "",
-              ),
-            ],
-            onTap: () {
-              print("Tap Event");
-            },
-            repeatForever: false,
-          ),
-          Container(padding: const EdgeInsets.all(5)),
-          RichText(
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: 'Learn ',
-                  style: TextStyle(fontSize: 20, color: Colors.grey.shade600),
-                ),
-                const TextSpan(
-                  text: 'ಕನ್ನಡ', // Kannada word highlighted
-                  style: TextStyle(
-                      fontSize: 20,
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold),
-                ),
-                TextSpan(
-                  text: ' free, for a while!',
-                  style: TextStyle(fontSize: 20, color: Colors.grey.shade600),
-                ),
-              ],
+          const SizedBox(height: 24),
+          Text(
+            'Varnamala',
+            style: GoogleFonts.nunito(
+              fontSize: 36,
+              fontWeight: FontWeight.w800,
+              color: VarnamalaTheme.peacockTeal,
+              letterSpacing: 0.5,
             ),
           ),
-          Container(padding: const EdgeInsets.all(5)),
+          const SizedBox(height: 12),
+          SizedBox(
+            height: 40,
+            child: AnimatedTextKit(
+              animatedTexts: [
+                FadeAnimatedText(
+                  'Reclaiming Language Learning',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: VarnamalaTheme.textSecondary,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                ),
+                FadeAnimatedText(
+                  'Learn Kannada • ಕಲಿಯಿರಿ',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: VarnamalaTheme.textSecondary,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                ),
+                FadeAnimatedText(
+                  'Learn Tamil • படியுங்கள்',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: VarnamalaTheme.textSecondary,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                ),
+                 FadeAnimatedText(
+                  'Learn Telugu • నేర్చుకోండి',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: VarnamalaTheme.textSecondary,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                ),
+                 FadeAnimatedText(
+                  'Learn Malayalam • പഠിക്കൂ',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w600,
+                    color: VarnamalaTheme.textSecondary,
+                  ),
+                  duration: const Duration(milliseconds: 1000),
+                ),
+                FadeAnimatedText(
+                  'Free. Forever.',
+                  textStyle: GoogleFonts.nunito(
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                    color: VarnamalaTheme.error, // Highlight "Free"
+                  ),
+                  duration: const Duration(milliseconds: 2500),
+                ),
+              ],
+              repeatForever: true,
+            ),
+          ),
+          const SizedBox(height: 32),
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: RichText(
+            padding: const EdgeInsets.symmetric(horizontal: 40.0),
+            child: Text(
+              "No hearts to lose. No energy to refill.\nJust pure learning.",
               textAlign: TextAlign.center,
-              text: TextSpan(
-                children: [
-                  TextSpan(
-                    text: 'We do store your login details and your XP (score)',
-                    style: TextStyle(fontSize: 20, color: Colors.grey.shade600),
-                  ),
-                  const TextSpan(
-                    text: ' so, happy ಕಲಿಕೆ!',
-                    style: TextStyle(
-                      fontSize: 20,
-                      color: primaryColor,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
+              style: GoogleFonts.nunito(
+                fontSize: 16,
+                color: VarnamalaTheme.textHint,
+                height: 1.5,
               ),
             ),
           ),

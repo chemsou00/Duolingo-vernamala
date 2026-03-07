@@ -1,20 +1,15 @@
-// Dart imports:
-
 // Flutter imports:
 import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:auto_route/auto_route.dart';
-import 'package:chiclet/chiclet.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:words625/application/character_provider.dart';
 import 'package:words625/application/language_provider.dart';
 import 'package:words625/core/enums.dart';
-import 'package:words625/core/extensions.dart';
 import 'package:words625/core/utils.dart';
 import 'package:words625/courses/alphabets/alphabets.dart';
 import 'package:words625/di/injection.dart';
@@ -43,11 +38,8 @@ class _CharacterPracticeScreenState extends State<CharacterPracticeScreen> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     targetLanguage = context.read<LanguageProvider>().selectedLanguage;
-
     sounds = getLanguageSounds(targetLanguage);
     vowels = getLanguageVowels(targetLanguage);
     consonants = getLanguageConsonants(targetLanguage);
@@ -55,106 +47,247 @@ class _CharacterPracticeScreenState extends State<CharacterPracticeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          Wrap(
-            spacing: 8,
-            runSpacing: 4,
-            children: vowels.entries.map((e) {
-              return Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ChicletOutlinedAnimatedButton(
-                    onPressed: () {
-                      getIt<FlutterTts>().speak(e.value);
-                    },
-                    child: Column(
-                      children: [
-                        Text(
-                          e.key,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        Text(e.value),
-                      ],
-                    )),
-              );
-            }).toList(),
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        // Vowels section
+        SliverToBoxAdapter(
+          child: _SectionHeader(
+            title: 'Vowels',
+            subtitle: '${vowels.length} characters',
+            icon: Icons.record_voice_over_rounded,
           ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-          Wrap(
-            spacing: 8,
-            runSpacing: 6,
-            children: consonants.entries.map((e) {
-              return Padding(
-                padding: const EdgeInsets.all(2.0),
-                child: ChicletOutlinedAnimatedButton(
-                    onPressed: () {
-                      getIt<FlutterTts>().speak(e.value);
-                    },
-                    child: Column(
-                      children: [
-                        Text(
-                          e.key,
-                          style: const TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black),
-                        ),
-                        Text(e.value),
-                      ],
-                    )),
-              );
-            }).toList(),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 0.85,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final entry = vowels.entries.elementAt(index);
+                return _CharacterTile(
+                  character: entry.key,
+                  pronunciation: entry.value,
+                  color: VarnamalaTheme.peacockTeal,
+                );
+              },
+              childCount: vowels.length,
+            ),
           ),
-          const SizedBox(height: 16),
-          const Divider(),
-          const SizedBox(height: 16),
-          Center(
+        ),
+        // Consonants section
+        SliverToBoxAdapter(
+          child: _SectionHeader(
+            title: 'Consonants',
+            subtitle: '${consonants.length} characters',
+            icon: Icons.abc_rounded,
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 4,
+              childAspectRatio: 0.85,
+              crossAxisSpacing: 8,
+              mainAxisSpacing: 8,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, index) {
+                final entry = consonants.entries.elementAt(index);
+                return _CharacterTile(
+                  character: entry.key,
+                  pronunciation: entry.value,
+                  color: VarnamalaTheme.leagueAmethyst,
+                );
+              },
+              childCount: consonants.length,
+            ),
+          ),
+        ),
+        // Practice buttons
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                ChicletOutlinedAnimatedButton(
-                  borderColor: primaryColor,
-                  width: context.width * 0.9,
-                  child: const Text("Learn Vowels", style: TextStyle()),
-                  onPressed: () {
-                    context.router.push(VowelAndConsonantLearningRoute(
-                      mode: CharacterLearningMode.vowels,
-                    ));
-                  },
-                ),
                 const SizedBox(height: 8),
-                ChicletOutlinedAnimatedButton(
-                  width: context.width * 0.9,
-                  borderColor: Colors.purple,
-                  child: const Text("Learn Consonants"),
-                  onPressed: () {
-                    context.router.push(VowelAndConsonantLearningRoute(
-                      mode: CharacterLearningMode.consonants,
-                    ));
-                  },
+                _PracticeButton(
+                  label: 'Learn Vowels',
+                  icon: Icons.record_voice_over_rounded,
+                  color: VarnamalaTheme.peacockTeal,
+                  onTap: () => context.router.push(
+                      VowelAndConsonantLearningRoute(
+                          mode: CharacterLearningMode.vowels)),
                 ),
-                const SizedBox(height: 16),
-                ChicletOutlinedAnimatedButton(
-                  borderColor: Colors.blue,
-                  width: context.width * 0.9,
-                  child: const Text("Random Alphabet"),
-                  onPressed: () {
-                    context.router.push(VowelAndConsonantLearningRoute(
-                      mode: CharacterLearningMode.random,
-                    ));
-                  },
+                const SizedBox(height: 10),
+                _PracticeButton(
+                  label: 'Learn Consonants',
+                  icon: Icons.abc_rounded,
+                  color: VarnamalaTheme.leagueAmethyst,
+                  onTap: () => context.router.push(
+                      VowelAndConsonantLearningRoute(
+                          mode: CharacterLearningMode.consonants)),
+                ),
+                const SizedBox(height: 10),
+                _PracticeButton(
+                  label: 'Random Practice',
+                  icon: Icons.shuffle_rounded,
+                  color: VarnamalaTheme.peacockCyan,
+                  onTap: () => context.router.push(
+                      VowelAndConsonantLearningRoute(
+                          mode: CharacterLearningMode.random)),
                 ),
               ],
             ),
           ),
+        ),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+      ],
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  final String title;
+  final String subtitle;
+  final IconData icon;
+
+  const _SectionHeader({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+      child: Row(
+        children: [
+          Icon(icon, color: VarnamalaTheme.peacockTeal, size: 22),
+          const SizedBox(width: 8),
+          Text(
+            title,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+          const SizedBox(width: 8),
+          Text(
+            subtitle,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: VarnamalaTheme.textHint,
+                ),
+          ),
         ],
+      ),
+    );
+  }
+}
+
+class _CharacterTile extends StatelessWidget {
+  final String character;
+  final String pronunciation;
+  final Color color;
+
+  const _CharacterTile({
+    required this.character,
+    required this.pronunciation,
+    required this.color,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+      child: InkWell(
+        onTap: () => getIt<FlutterTts>().speak(pronunciation),
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+            border: Border.all(color: const Color(0xFFEEF2F1)),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                character,
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.w700,
+                  color: color,
+                ),
+              ),
+              const SizedBox(height: 2),
+              Text(
+                pronunciation,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: VarnamalaTheme.textSecondary,
+                      fontSize: 11,
+                    ),
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _PracticeButton extends StatelessWidget {
+  final String label;
+  final IconData icon;
+  final Color color;
+  final VoidCallback onTap;
+
+  const _PracticeButton({
+    required this.label,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+            border: Border.all(color: color.withValues(alpha: 0.3), width: 2),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(icon, color: color, size: 22),
+              const SizedBox(width: 10),
+              Text(
+                label,
+                style: TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.w600,
+                  color: color,
+                ),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -168,20 +301,19 @@ class RenderCharacter extends StatefulWidget {
       {super.key, required this.alphabet, required this.shouldRebuild});
 
   @override
-  _RenderCharacterState createState() => _RenderCharacterState();
+  RenderCharacterState createState() => RenderCharacterState();
 }
 
-class _RenderCharacterState extends State<RenderCharacter> {
+class RenderCharacterState extends State<RenderCharacter> {
   final List<List<Offset>> strokes = [];
   List<Offset> currentStroke = [];
 
   @override
   void initState() {
     super.initState();
-
     widget.shouldRebuild.addListener(() {
       setState(() {
-        strokes.clear(); // Clear strokes when `shouldRebuild` is true
+        strokes.clear();
       });
     });
   }
@@ -189,31 +321,31 @@ class _RenderCharacterState extends State<RenderCharacter> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: AspectRatio(
-        aspectRatio: 0.7, // Makes it square
+        aspectRatio: 0.75,
         child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: Colors.grey.withOpacity(0.2)),
-            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            border: Border.all(
+                color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.15)),
+            borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
           ),
           child: Stack(
             children: [
-              // Background guide character
               Center(
                 child: Opacity(
-                  opacity: 0.12,
+                  opacity: 0.08,
                   child: Text(
                     widget.alphabet,
                     style: const TextStyle(
-                      fontSize: 300,
-                      color: Colors.black,
+                      fontSize: 280,
+                      color: VarnamalaTheme.peacockTeal,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                 ),
               ),
-              // Drawing Canvas
               LayoutBuilder(
                 builder: (context, constraints) {
                   return GestureDetector(
@@ -247,21 +379,31 @@ class _RenderCharacterState extends State<RenderCharacter> {
                   );
                 },
               ),
-              // Clear button
               Positioned(
                 top: 10,
                 right: 10,
-                child: IconButton(
-                  icon: Icon(
-                    FontAwesomeIcons.eraser,
-                    color: Colors.black.withOpacity(0.7),
+                child: Material(
+                  color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+                  borderRadius:
+                      BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                  child: InkWell(
+                    borderRadius:
+                        BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                    onTap: () {
+                      setState(() {
+                        strokes.clear();
+                        currentStroke = [];
+                      });
+                    },
+                    child: const Padding(
+                      padding: EdgeInsets.all(8),
+                      child: Icon(
+                        Icons.delete_outline_rounded,
+                        color: VarnamalaTheme.peacockTeal,
+                        size: 22,
+                      ),
+                    ),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      strokes.clear();
-                      currentStroke = [];
-                    });
-                  },
                 ),
               ),
             ],
@@ -291,13 +433,11 @@ class _VowelAndConsonantLearningPageState
   late Map<String, String> vowels;
   late Map<String, String> consonants;
 
-  // Add ValueNotifier to track character changes
   final ValueNotifier<bool> shouldRebuildCharacter = ValueNotifier(false);
 
   @override
   void initState() {
     super.initState();
-
     targetLanguage = context.read<LanguageProvider>().selectedLanguage;
     sounds = getLanguageSounds(targetLanguage);
     vowels = getLanguageVowels(targetLanguage);
@@ -322,67 +462,136 @@ class _VowelAndConsonantLearningPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SizedBox(
-        height: context.height,
+      backgroundColor: VarnamalaTheme.scaffoldBackground,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.close_rounded, color: VarnamalaTheme.textHint),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: Text(
+          _getModeTitle(),
+          style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+              ),
+        ),
+      ),
+      body: SafeArea(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
+            const Spacer(flex: 1),
             RenderCharacter(
               alphabet: currentCharacter.key,
               shouldRebuild: shouldRebuildCharacter,
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  currentCharacter.key,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                const Text("=", style: TextStyle(fontSize: 32)),
-                const SizedBox(width: 8),
-                Text(
-                  currentCharacter.value,
-                  style: const TextStyle(
-                    fontSize: 32,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 32),
-            ChicletOutlinedAnimatedButton(
-              borderColor: Colors.green,
-              child: const Icon(
-                Icons.arrow_forward_ios,
-                color: Colors.green,
+            const SizedBox(height: 24),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              margin: const EdgeInsets.symmetric(horizontal: 32),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius:
+                    BorderRadius.circular(VarnamalaTheme.radiusMedium),
+                border: Border.all(color: const Color(0xFFEEF2F1)),
               ),
-              onPressed: () {
-                // Clear drawing and move to the next character
-                context.read<CharacterProvider>().clearPoints();
-                setState(() {
-                  visitedCharacters.add(currentCharacter);
-                  charactersToLearn.remove(currentCharacter.key);
-                  if (charactersToLearn.isNotEmpty) {
-                    currentCharacter = charactersToLearn.entries.first;
-                  } else {
-                    // Handle end of learning characters, if necessary
-                  }
-                });
-
-                // Trigger rebuild for RenderCharacter
-                shouldRebuildCharacter.value = !shouldRebuildCharacter.value;
-              },
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    currentCharacter.key,
+                    style: const TextStyle(
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                      color: VarnamalaTheme.peacockTeal,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  const Icon(Icons.arrow_forward_rounded,
+                      color: VarnamalaTheme.textHint, size: 20),
+                  const SizedBox(width: 12),
+                  Text(
+                    currentCharacter.value,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w600,
+                      color: VarnamalaTheme.textPrimary,
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Material(
+                    color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+                    borderRadius:
+                        BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                    child: InkWell(
+                      borderRadius:
+                          BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                      onTap: () =>
+                          getIt<FlutterTts>().speak(currentCharacter.value),
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Icon(Icons.volume_up_rounded,
+                            color: VarnamalaTheme.peacockTeal, size: 22),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
+            const Spacer(flex: 2),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: SizedBox(
+                width: double.infinity,
+                height: 52,
+                child: ElevatedButton(
+                  onPressed: () {
+                    context.read<CharacterProvider>().clearPoints();
+                    setState(() {
+                      visitedCharacters.add(currentCharacter);
+                      charactersToLearn.remove(currentCharacter.key);
+                      if (charactersToLearn.isNotEmpty) {
+                        currentCharacter = charactersToLearn.entries.first;
+                      }
+                    });
+                    shouldRebuildCharacter.value =
+                        !shouldRebuildCharacter.value;
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: VarnamalaTheme.peacockTeal,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(
+                          VarnamalaTheme.radiusMedium),
+                    ),
+                  ),
+                  child: const Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text('Next',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.w700)),
+                      SizedBox(width: 8),
+                      Icon(Icons.arrow_forward_rounded, size: 22),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(height: 24),
           ],
         ),
       ),
     );
+  }
+
+  String _getModeTitle() {
+    switch (widget.mode) {
+      case CharacterLearningMode.vowels:
+        return 'Vowels';
+      case CharacterLearningMode.consonants:
+        return 'Consonants';
+      case CharacterLearningMode.random:
+        return 'Random Practice';
+    }
   }
 }
 
@@ -394,10 +603,10 @@ class CharacterPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = Colors.green
+      ..color = VarnamalaTheme.peacockTeal
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
-      ..strokeWidth = 8.0
+      ..strokeWidth = 6.0
       ..style = PaintingStyle.stroke;
 
     for (final stroke in strokes) {
@@ -407,10 +616,8 @@ class CharacterPainter extends CustomPainter {
       path.moveTo(stroke[0].dx, stroke[0].dy);
 
       if (stroke.length < 3) {
-        // For short strokes, just draw a line
         path.lineTo(stroke[1].dx, stroke[1].dy);
       } else {
-        // Use quadratic bezier curves for smooth lines
         for (var i = 1; i < stroke.length - 1; i++) {
           final p0 = stroke[i];
           final p1 = stroke[i + 1];

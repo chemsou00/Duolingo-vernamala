@@ -8,10 +8,10 @@ import 'package:provider/provider.dart';
 
 // Project imports:
 import 'package:words625/application/level_provider.dart';
-import 'package:words625/core/logger.dart';
 import 'package:words625/domain/course/course.dart';
 import 'package:words625/views/lesson/components/lesson_app_bar.dart';
 import 'package:words625/views/lesson/components/list_lesson.dart';
+import 'package:words625/views/theme.dart';
 
 enum LessonAvailability { loading, present, absent }
 
@@ -58,6 +58,7 @@ class LessonPageState extends State<LessonPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: lessonAvailability == LessonAvailability.present
           ? const LessonAppBar()
           : null,
@@ -65,38 +66,36 @@ class LessonPageState extends State<LessonPage> {
         builder: (context) {
           switch (lessonAvailability) {
             case LessonAvailability.loading:
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: CircularProgressIndicator(
+                  color: VarnamalaTheme.peacockTeal,
+                  strokeWidth: 3,
+                ),
+              );
             case LessonAvailability.present:
               return lessons![index];
             case LessonAvailability.absent:
-              return const Center(
-                child: Text("No lessons",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22,
-                      color: Colors.grey,
-                    )),
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.menu_book_rounded,
+                        size: 64,
+                        color:
+                            VarnamalaTheme.textHint.withValues(alpha: 0.3)),
+                    const SizedBox(height: 16),
+                    Text(
+                      'No lessons available',
+                      style:
+                          Theme.of(context).textTheme.titleMedium?.copyWith(
+                                color: VarnamalaTheme.textHint,
+                              ),
+                    ),
+                  ],
+                ),
               );
           }
         },
-      ),
-    );
-  }
-
-  dialogTitle(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        margin: const EdgeInsets.only(top: 15),
-        padding: const EdgeInsets.only(left: 15),
-        child: DefaultTextStyle(
-          style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF43C000),
-          ),
-          child: Text(text),
-        ),
       ),
     );
   }
@@ -117,27 +116,25 @@ class CheckButton extends StatelessWidget {
           if (lessonState.answerState == AnswerState.correct ||
               lessonState.answerState == AnswerState.readyForNext) {
             title = "CONTINUE";
-            backgroundColor = const Color(0xFF58A700);
+            backgroundColor = VarnamalaTheme.peacockTurquoise;
           } else if (lessonState.answerState == AnswerState.incorrect) {
             title = "GOT IT";
-            backgroundColor = const Color(0xFFE53935);
+            backgroundColor = VarnamalaTheme.error;
           } else {
             title = "CHECK";
-            backgroundColor = const Color(0xFF1F727E);
+            backgroundColor = VarnamalaTheme.peacockTeal;
           }
 
           final isEnabled = lessonState.selectedAnswer != null;
 
           return ChicletAnimatedButton(
             width: MediaQuery.of(context).size.width - 40,
-            backgroundColor: isEnabled 
-                ? backgroundColor 
-                : const Color(0xFFE5E7EB),
+            backgroundColor:
+                isEnabled ? backgroundColor : const Color(0xFFEEF2F1),
             onPressed: isEnabled
                 ? () {
                     if (lessonState.answerState != AnswerState.readyForNext) {
                       final checkAnswer = lessonState.checkAnswer();
-                      logger.w("Check Answer: $checkAnswer");
                       if (checkAnswer) {
                         if (lessonState.answerState == AnswerState.correct) {
                           lessonState
@@ -155,7 +152,8 @@ class CheckButton extends StatelessWidget {
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: isEnabled ? Colors.white : const Color(0xFF9CA3AF),
+                color:
+                    isEnabled ? Colors.white : VarnamalaTheme.textHint,
                 letterSpacing: 0.5,
               ),
             ),
@@ -169,12 +167,12 @@ class CheckButton extends StatelessWidget {
 class LevelPlayerChoice extends StatelessWidget {
   const LevelPlayerChoice({super.key});
 
-  static const _primaryColor = Color(0xFF1F727E);
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(VarnamalaTheme.radiusXLarge)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
@@ -183,45 +181,37 @@ class LevelPlayerChoice extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFFF0FDF4),
+                color:
+                    VarnamalaTheme.peacockTurquoise.withValues(alpha: 0.1),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.celebration_rounded,
-                color: Color(0xFF16A34A),
+                color: VarnamalaTheme.peacockTurquoise,
                 size: 40,
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Level Complete!",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "Great job on finishing this level.",
-              style: TextStyle(
-                fontSize: 15,
-                color: Color(0xFF6B7280),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 28),
-            ChicletAnimatedButton(
-              width: MediaQuery.of(context).size.width * 0.55,
-              backgroundColor: _primaryColor,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                "Continue",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Continue',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700)),
               ),
             ),
             const SizedBox(height: 12),
@@ -230,12 +220,12 @@ class LevelPlayerChoice extends StatelessWidget {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 "Back to Courses",
-                style: TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: VarnamalaTheme.textHint,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
           ],
@@ -248,12 +238,12 @@ class LevelPlayerChoice extends StatelessWidget {
 class CourseCompletionPlayerChoice extends StatelessWidget {
   const CourseCompletionPlayerChoice({super.key});
 
-  static const _primaryColor = Color(0xFF1F727E);
-
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      shape: RoundedRectangleBorder(
+          borderRadius:
+              BorderRadius.circular(VarnamalaTheme.radiusXLarge)),
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
@@ -261,46 +251,37 @@ class CourseCompletionPlayerChoice extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: const BoxDecoration(
-                color: Color(0xFFFEF3C7),
+              decoration: BoxDecoration(
+                color: VarnamalaTheme.success.withValues(alpha: 0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
                 Icons.emoji_events_rounded,
-                color: Color(0xFFD97706),
+                color: VarnamalaTheme.successDark,
                 size: 40,
               ),
             ),
             const SizedBox(height: 20),
-            const Text(
+            Text(
               "Course Complete!",
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.w700,
-                color: Color(0xFF1A1A1A),
-              ),
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
             ),
             const SizedBox(height: 8),
-            const Text(
+            Text(
               "You've mastered all the lessons.",
-              style: TextStyle(
-                fontSize: 15,
-                color: Color(0xFF6B7280),
-              ),
+              style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 28),
-            ChicletAnimatedButton(
-              width: MediaQuery.of(context).size.width * 0.55,
-              backgroundColor: _primaryColor,
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text(
-                "Practice Again",
-                style: TextStyle(
-                  fontWeight: FontWeight.w600,
-                  fontSize: 16,
-                ),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('Practice Again',
+                    style: TextStyle(
+                        fontSize: 16, fontWeight: FontWeight.w700)),
               ),
             ),
             const SizedBox(height: 12),
@@ -309,12 +290,12 @@ class CourseCompletionPlayerChoice extends StatelessWidget {
                 Navigator.of(context).pop();
                 Navigator.of(context).pop();
               },
-              child: const Text(
+              child: Text(
                 "Back to Courses",
-                style: TextStyle(
-                  color: Color(0xFF6B7280),
-                  fontWeight: FontWeight.w500,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: VarnamalaTheme.textHint,
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
             ),
           ],

@@ -1,6 +1,4 @@
 // Flutter imports:
-
-// Flutter imports:
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -13,6 +11,7 @@ import 'package:words625/courses/languages/dictionary.dart';
 import 'package:words625/di/injection.dart';
 import 'package:words625/domain/course/course.dart';
 import 'package:words625/views/lesson/lesson_screen.dart';
+import 'package:words625/views/theme.dart';
 
 class ListLesson extends StatefulWidget {
   final Course course;
@@ -28,9 +27,7 @@ class ListLesson extends StatefulWidget {
 class _ListLessonState extends State<ListLesson> {
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       setCourse(widget.course);
     });
@@ -47,6 +44,7 @@ class _ListLessonState extends State<ListLesson> {
       builder: (context, lessonProvider, child) {
         return Stack(
           children: [
+            // Answer feedback panel
             if (lessonProvider.answerState == AnswerState.correct ||
                 lessonProvider.answerState == AnswerState.incorrect ||
                 lessonProvider.answerState == AnswerState.readyForNext)
@@ -57,14 +55,15 @@ class _ListLessonState extends State<ListLesson> {
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: lessonProvider.answerState.isCorrect
-                        ? const Color(0xFFE8F5E9)
-                        : const Color(0xFFFFEBEE),
+                        ? VarnamalaTheme.peacockTurquoise
+                            .withValues(alpha: 0.08)
+                        : VarnamalaTheme.error.withValues(alpha: 0.06),
                     borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(16),
-                        topRight: Radius.circular(16)),
+                        topLeft: Radius.circular(20),
+                        topRight: Radius.circular(20)),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Colors.black.withValues(alpha: 0.06),
                         blurRadius: 20,
                         offset: const Offset(0, -4),
                       ),
@@ -81,8 +80,8 @@ class _ListLessonState extends State<ListLesson> {
                                 ? Icons.check_circle_rounded
                                 : Icons.cancel_rounded,
                             color: lessonProvider.answerState.isCorrect
-                                ? const Color(0xFF2E7D32)
-                                : const Color(0xFFC62828),
+                                ? VarnamalaTheme.peacockTeal
+                                : VarnamalaTheme.error,
                             size: 28,
                           ),
                           const SizedBox(width: 10),
@@ -94,8 +93,8 @@ class _ListLessonState extends State<ListLesson> {
                               fontWeight: FontWeight.w700,
                               fontSize: 20,
                               color: lessonProvider.answerState.isCorrect
-                                  ? const Color(0xFF2E7D32)
-                                  : const Color(0xFFC62828),
+                                  ? VarnamalaTheme.peacockTeal
+                                  : VarnamalaTheme.error,
                             ),
                           ),
                         ],
@@ -104,18 +103,18 @@ class _ListLessonState extends State<ListLesson> {
                         const SizedBox(height: 12),
                         Text(
                           "Correct answer:",
-                          style: TextStyle(
-                            fontSize: 14,
-                            color: Colors.grey.shade600,
-                          ),
+                          style: Theme.of(context)
+                              .textTheme
+                              .bodySmall
+                              ?.copyWith(color: VarnamalaTheme.textHint),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           "${lessonProvider.currentQuestion?.correctAnswer}",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
-                            color: Color(0xFFC62828),
+                            color: VarnamalaTheme.error,
                           ),
                         ),
                       ] else if (lessonProvider
@@ -123,11 +122,13 @@ class _ListLessonState extends State<ListLesson> {
                           null) ...[
                         const SizedBox(height: 12),
                         Text(
-                          lessonProvider.currentQuestion?.translatedSentence ?? "",
-                          style: const TextStyle(
+                          lessonProvider
+                                  .currentQuestion?.translatedSentence ??
+                              "",
+                          style: TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
-                            color: Color(0xFF388E3C),
+                            color: VarnamalaTheme.peacockTeal,
                           ),
                         ),
                       ],
@@ -135,36 +136,41 @@ class _ListLessonState extends State<ListLesson> {
                   ),
                 ),
               ),
+            // Main content
             Column(
               children: [
                 Instruction(
-                    prompt: lessonProvider.currentQuestion?.prompt ?? "--"),
-                const Padding(padding: EdgeInsets.only(top: 15)),
+                    prompt:
+                        lessonProvider.currentQuestion?.prompt ?? "--"),
+                const SizedBox(height: 12),
                 QuestionRow(question: lessonProvider.currentQuestion),
                 const SizedBox(height: 8),
-                Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      ...lessonProvider.currentQuestion?.options?.map((option) {
-                            final selectedAnswer =
-                                lessonProvider.selectedAnswer;
-                            return GestureDetector(
-                              onTap: () {
-                                lessonProvider.selectAnswer(option);
-                              },
-                              child: ListChoice(
-                                title: option,
-                                isSelected: selectedAnswer == option,
-                                isCorrect: lessonProvider.isAnswerCorrect,
-                              ),
-                            );
-                          }).toList() ??
-                          [],
-                    ],
+                Expanded(
+                  child: SingleChildScrollView(
+                    physics: const BouncingScrollPhysics(),
+                    child: Column(
+                      children: [
+                        ...lessonProvider.currentQuestion?.options
+                                ?.map((option) {
+                              final selectedAnswer =
+                                  lessonProvider.selectedAnswer;
+                              return GestureDetector(
+                                onTap: () {
+                                  lessonProvider.selectAnswer(option);
+                                },
+                                child: ListChoice(
+                                  title: option,
+                                  isSelected: selectedAnswer == option,
+                                  isCorrect:
+                                      lessonProvider.isAnswerCorrect,
+                                ),
+                              );
+                            }).toList() ??
+                            [],
+                      ],
+                    ),
                   ),
                 ),
-                const Spacer(),
                 const CheckButton(),
               ],
             ),
@@ -183,17 +189,15 @@ class Instruction extends StatelessWidget {
   Widget build(BuildContext context) {
     return Align(
       alignment: Alignment.centerLeft,
-      child: Container(
+      child: Padding(
         padding: const EdgeInsets.only(top: 16, left: 20, right: 20),
         child: Text(
           prompt,
-          style: const TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.w700,
-            color: Color(0xFF1A1A1A),
-            letterSpacing: -0.3,
-            height: 1.3,
-          ),
+          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                fontWeight: FontWeight.w700,
+                letterSpacing: -0.3,
+                height: 1.3,
+              ),
         ),
       ),
     );
@@ -222,12 +226,10 @@ class QuestionRow extends StatelessWidget {
                   )
                 : Text(
                     question?.sentence ?? "--",
-                    style: const TextStyle(
-                      fontSize: 19,
-                      fontWeight: FontWeight.w600,
-                      color: Color(0xFF2C2C2C),
-                      height: 1.4,
-                    ),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          height: 1.4,
+                        ),
                   ),
           ),
         ],
@@ -249,20 +251,16 @@ class QuestionRow extends StatelessWidget {
               message: getWordMeaning(word),
               child: Text(
                 word,
-                style: const TextStyle(
-                  fontSize: 19,
-                  fontWeight: FontWeight.w600,
-                  color: Color(0xFF2C2C2C),
-                  decoration: TextDecoration.underline,
-                  decorationStyle: TextDecorationStyle.dotted,
-                  decorationColor: Color(0xFF9CA3AF),
-                ),
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                      decoration: TextDecoration.underline,
+                      decorationStyle: TextDecorationStyle.dotted,
+                      decorationColor: VarnamalaTheme.textHint,
+                    ),
               ),
             ),
           ),
-          const TextSpan(
-            text: ' ',
-          ),
+          const TextSpan(text: ' '),
         ],
       );
     }).toList();
@@ -284,28 +282,31 @@ class ListChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lessonState = context.watch<LessonProvider>();
-    
+
     Color borderColor;
     Color backgroundColor;
-    Color textColor = const Color(0xFF3C3C3C);
-    
+    Color textColor = VarnamalaTheme.textPrimary;
+
     if (lessonState.answerState.isCorrect && isSelected) {
-      borderColor = const Color(0xFF58A700);
-      backgroundColor = const Color(0xFFE8F5E9);
-      textColor = const Color(0xFF2E7D32);
-    } else if (lessonState.answerState == AnswerState.incorrect && isSelected) {
-      borderColor = const Color(0xFFE53935);
-      backgroundColor = const Color(0xFFFFEBEE);
-      textColor = const Color(0xFFC62828);
-    } else if (lessonState.answerState == AnswerState.selected && isSelected) {
-      borderColor = const Color(0xFF1F727E);
-      backgroundColor = const Color(0xFFF0FAFA);
-      textColor = const Color(0xFF1F727E);
+      borderColor = VarnamalaTheme.peacockTurquoise;
+      backgroundColor =
+          VarnamalaTheme.peacockTurquoise.withValues(alpha: 0.08);
+      textColor = VarnamalaTheme.peacockTeal;
+    } else if (lessonState.answerState == AnswerState.incorrect &&
+        isSelected) {
+      borderColor = VarnamalaTheme.error;
+      backgroundColor = VarnamalaTheme.error.withValues(alpha: 0.06);
+      textColor = VarnamalaTheme.errorDark;
+    } else if (lessonState.answerState == AnswerState.selected &&
+        isSelected) {
+      borderColor = VarnamalaTheme.peacockTeal;
+      backgroundColor = VarnamalaTheme.peacockTeal.withValues(alpha: 0.05);
+      textColor = VarnamalaTheme.peacockTeal;
     } else {
-      borderColor = const Color(0xFFE0E0E0);
+      borderColor = const Color(0xFFEEF2F1);
       backgroundColor = Colors.white;
     }
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 5.0),
       child: AnimatedContainer(
@@ -315,7 +316,8 @@ class ListChoice extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
           color: backgroundColor,
-          borderRadius: BorderRadius.circular(12),
+          borderRadius:
+              BorderRadius.circular(VarnamalaTheme.radiusMedium),
           border: Border.all(
             width: isSelected ? 2.0 : 1.5,
             color: borderColor,
@@ -323,7 +325,7 @@ class ListChoice extends StatelessWidget {
           boxShadow: isSelected
               ? [
                   BoxShadow(
-                    color: borderColor.withOpacity(0.15),
+                    color: borderColor.withValues(alpha: 0.12),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -351,17 +353,17 @@ class SpeakButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: const Color(0xFF1F727E),
-      borderRadius: BorderRadius.circular(12),
+      color: VarnamalaTheme.peacockTeal,
+      borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
       child: InkWell(
         onTap: () => getIt<FlutterTts>().speak(sentence),
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
         child: Container(
           padding: const EdgeInsets.all(10),
           child: const Icon(
             Icons.volume_up_rounded,
             color: Colors.white,
-            size: 28,
+            size: 26,
           ),
         ),
       ),

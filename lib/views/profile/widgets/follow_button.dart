@@ -5,6 +5,9 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Project imports:
+import 'package:words625/views/theme.dart';
+
 class FollowButton extends StatefulWidget {
   final String targetUserId;
   final String targetUserName;
@@ -32,7 +35,6 @@ class _FollowButtonState extends State<FollowButton> {
 
   Future<void> _checkIfFollowing() async {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
-
     if (currentUserId == null) return;
 
     final followingDoc = await FirebaseFirestore.instance
@@ -57,20 +59,14 @@ class _FollowButtonState extends State<FollowButton> {
         FirebaseFirestore.instance.collection('users').doc(widget.targetUserId);
 
     if (_isFollowing) {
-      // Unfollow: Remove from both following and followers collections
       await userDoc.collection('following').doc(widget.targetUserId).delete();
       await targetUserDoc.collection('followers').doc(currentUserId).delete();
-      setState(() {
-        _isFollowing = false;
-      });
+      setState(() => _isFollowing = false);
     } else {
-      // Fetch current user's details from Firestore
       final currentUserSnapshot = await userDoc.get();
       final currentUserData = currentUserSnapshot.data();
-
       if (currentUserData == null) return;
 
-      // Follow: Add to both following and followers collections
       await userDoc.collection('following').doc(widget.targetUserId).set({
         'name': widget.targetUserName,
         'profileImage': widget.targetUserProfileImage,
@@ -83,32 +79,43 @@ class _FollowButtonState extends State<FollowButton> {
         'followedAt': FieldValue.serverTimestamp(),
       });
 
-      setState(() {
-        _isFollowing = true;
-      });
+      setState(() => _isFollowing = true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 30,
-      margin: const EdgeInsets.only(top: 10, bottom: 10, right: 5, left: 5),
-      child: ElevatedButton(
-        onPressed: _toggleFollow,
-        style: ElevatedButton.styleFrom(
-          backgroundColor: _isFollowing ? Colors.grey : const Color(0xFF1CB0F6),
-          elevation: 5,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-        ),
-        child: Text(
-          _isFollowing ? 'UNFOLLOW' : 'FOLLOW',
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
+    return SizedBox(
+      height: 32,
+      child: Material(
+        color: _isFollowing
+            ? Colors.transparent
+            : VarnamalaTheme.peacockTeal,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusSmall),
+        child: InkWell(
+          onTap: _toggleFollow,
+          borderRadius: BorderRadius.circular(VarnamalaTheme.radiusSmall),
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            decoration: _isFollowing
+                ? BoxDecoration(
+                    borderRadius:
+                        BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                    border: Border.all(color: VarnamalaTheme.textHint),
+                  )
+                : null,
+            child: Center(
+              child: Text(
+                _isFollowing ? 'Following' : 'Follow',
+                style: TextStyle(
+                  color: _isFollowing
+                      ? VarnamalaTheme.textSecondary
+                      : Colors.white,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           ),
         ),
       ),

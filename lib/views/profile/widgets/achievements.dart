@@ -1,206 +1,218 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
-// Package imports:
-import 'package:percent_indicator/linear_percent_indicator.dart';
+// Project imports:
+import 'package:words625/views/theme.dart';
 
 class Achievements extends StatelessWidget {
   const Achievements({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        bigTitle('Achievements'),
-        Container(
-          margin: const EdgeInsets.only(left: 15, right: 15, top: 10),
-          // height: 350,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              width: 2.5,
-              color: const Color(0xFFE5E5E5),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle(context, 'Achievements', Icons.military_tech_rounded),
+          const SizedBox(height: 8),
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
+              border: Border.all(color: const Color(0xFFEEF2F1)),
+            ),
+            child: Column(
+              children: [
+                _AchievementTile(
+                  icon: Icons.auto_stories_rounded,
+                  iconColor: const Color(0xFF42A5F5),
+                  label: 'Scholar',
+                  description: 'Learn 1,000 new words',
+                  current: 34,
+                  target: 50,
+                  level: 9,
+                ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                _AchievementTile(
+                  icon: Icons.psychology_rounded,
+                  iconColor: const Color(0xFF66BB6A),
+                  label: 'Sage',
+                  description: 'Learn 1,000 new words in a single course',
+                  current: 50,
+                  target: 100,
+                  level: 1,
+                ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                _AchievementTile(
+                  icon: Icons.workspace_premium_rounded,
+                  iconColor: const Color(0xFFAB47BC),
+                  label: 'Champion',
+                  description: 'Complete 200 lessons',
+                  current: 150,
+                  target: 200,
+                  level: 2,
+                ),
+                const Divider(height: 1, indent: 16, endIndent: 16),
+                Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () {},
+                    borderRadius: const BorderRadius.only(
+                      bottomLeft:
+                          Radius.circular(VarnamalaTheme.radiusLarge),
+                      bottomRight:
+                          Radius.circular(VarnamalaTheme.radiusLarge),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 14),
+                      child: Row(
+                        children: [
+                          Text(
+                            'View 7 more',
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  color: VarnamalaTheme.peacockTeal,
+                                ),
+                          ),
+                          const Spacer(),
+                          const Icon(Icons.chevron_right_rounded,
+                              color: VarnamalaTheme.peacockTeal, size: 22),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              achievement('assets/images/achievement-scholar.png', 'Scholar',
-                  'Learn 1,000 new words', 34, 50, 9),
-              achievement('assets/images/achievement-sage.png', 'Sage',
-                  'Learn 1,000 new words in a single course', 50, 100, 1),
-              achievement(
-                  'assets/images/achievement-scholar.png',
-                  'Scholar',
-                  'Learn 1,000 new words in a single course something here',
-                  150,
-                  200,
-                  2),
-              moreBox('View 7 more'),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-
-  achievement(String image, String label, String description, int current,
-      int target, int level) {
-    return Container(
-      padding: const EdgeInsets.only(left: 15),
-      height: 135,
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: const Color(0xFFE5E5E5),
-        ),
-      ),
-      child: Row(
-        children: [
-          achievementImage(image, level),
-          const Padding(padding: EdgeInsets.all(5)),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              achievementLabel(label),
-              const Padding(padding: EdgeInsets.all(3)),
-              achievementDescription(description),
-              const Padding(padding: EdgeInsets.all(5)),
-              progressBar(current, target),
-            ],
-          )
         ],
       ),
     );
   }
 
-  moreBox(String text) {
-    return Container(
-      height: 45,
-      padding: const EdgeInsets.only(left: 15),
-      decoration: BoxDecoration(
-        border: Border.all(
-          color: const Color(0xFFE5E5E5),
-        ),
-      ),
-      child: const Row(
-        children: [
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Text(
-              'View 7 more',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF4B4B4B),
-                fontSize: 17,
-              ),
-            ),
-          ),
-          Spacer(),
-          Icon(Icons.arrow_forward_ios, size: 20, color: Color(0xFFAFAFAF)),
-          Padding(padding: EdgeInsets.only(right: 10))
-        ],
-      ),
-    );
-  }
-
-  achievementImage(String image, int level) {
-    return Stack(
-      alignment: Alignment.center,
-      children: [
-        Image.asset(
-          image,
-          width: 80,
-        ),
-        Positioned(
-          bottom: 10,
-          child: Text(
-            'Level $level',
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF4B4B4B),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  progressBar(int current, int target) {
-    return SizedBox(
-      width: 250,
+  Widget _sectionTitle(BuildContext context, String text, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 8),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        mainAxisSize: MainAxisSize.max,
         children: [
-          LinearPercentIndicator(
-            width: 165,
-            animation: true,
-            lineHeight: 15.0,
-            padding: const EdgeInsets.all(0),
-            animationDuration: 100,
-            percent: current / target,
-            barRadius: const Radius.circular(10),
-            backgroundColor: const Color(0xFFE5E5E5),
-            progressColor: const Color(0xFFFFDE00),
-          ),
-          // const Padding(padding: EdgeInsets.only(right: 25)),
-          const Spacer(),
+          Icon(icon, color: VarnamalaTheme.peacockTeal, size: 22),
+          const SizedBox(width: 8),
           Text(
-            '$current/$target',
-            style: const TextStyle(
-              fontSize: 15,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFFAFAFAF),
-            ),
-            textAlign: TextAlign.right,
+            text,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
           ),
-          const Padding(padding: EdgeInsets.only(left: 15))
         ],
       ),
     );
   }
+}
 
-  achievementDescription(String name) {
-    return SizedBox(
-      width: 250,
-      child: Text(
-        name,
-        style: const TextStyle(
-          color: Color(0xFF777777),
-          fontSize: 15,
-        ),
-        softWrap: true,
-        overflow: TextOverflow.visible,
-      ),
-    );
-  }
+class _AchievementTile extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String label;
+  final String description;
+  final int current;
+  final int target;
+  final int level;
 
-  achievementLabel(String name) {
-    return Text(
-      name,
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF4B4B4B),
-        fontSize: 17,
-      ),
-    );
-  }
+  const _AchievementTile({
+    required this.icon,
+    required this.iconColor,
+    required this.label,
+    required this.description,
+    required this.current,
+    required this.target,
+    required this.level,
+  });
 
-  bigTitle(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.only(top: 10, left: 15, bottom: 10),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF4B4B4B),
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: iconColor.withValues(alpha: 0.1),
+              borderRadius:
+                  BorderRadius.circular(VarnamalaTheme.radiusMedium),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, color: iconColor, size: 24),
+                Text(
+                  'Lv.$level',
+                  style: TextStyle(
+                    fontSize: 9,
+                    fontWeight: FontWeight.w700,
+                    color: iconColor,
+                  ),
+                ),
+              ],
+            ),
           ),
-        ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  label,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  description,
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: VarnamalaTheme.textSecondary,
+                      ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(
+                            VarnamalaTheme.radiusRound),
+                        child: LinearProgressIndicator(
+                          value: current / target,
+                          minHeight: 8,
+                          backgroundColor: const Color(0xFFEEF2F1),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                              VarnamalaTheme.success),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Text(
+                      '$current/$target',
+                      style:
+                          Theme.of(context).textTheme.bodySmall?.copyWith(
+                                color: VarnamalaTheme.textHint,
+                                fontWeight: FontWeight.w600,
+                              ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

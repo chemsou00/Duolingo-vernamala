@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Project imports:
-import 'package:words625/gen/assets.gen.dart';
+import 'package:words625/views/theme.dart';
 
 class BottomNavigator extends StatelessWidget {
   final Function(int) onPress;
@@ -19,77 +19,113 @@ class BottomNavigator extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        border: const Border(
-          top: BorderSide(color: Color(0xFFEEEEEE), width: 1),
-        ),
-      ),
-      child: BottomNavigationBar(
-        showSelectedLabels: false,
-        unselectedItemColor: Colors.grey.shade400,
-        items: <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/images/learn-off.png',
-              height: 36,
-            ),
-            activeIcon: Image.asset(
-              'assets/images/learn-on.png',
-              height: 36,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              Assets.images.kannadaAlphabet.path,
-              height: 36,
-            ),
-            activeIcon: Image.asset(
-              Assets.images.kannadaAlphabet.path,
-              height: 36,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/images/person-off.png',
-              height: 36,
-            ),
-            activeIcon: Image.asset(
-              'assets/images/person-on.png',
-              height: 36,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/images/shield-off.png',
-              color: Colors.grey,
-              height: 36,
-            ),
-            activeIcon: Image.asset(
-              'assets/images/shield-on.png',
-              height: 36,
-            ),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Image.asset(
-              'assets/images/shop-off.png',
-              height: 36,
-            ),
-            activeIcon: Image.asset(
-              'assets/images/shop-on.png',
-              height: 36,
-            ),
-            label: '',
+        boxShadow: [
+          BoxShadow(
+            color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.08),
+            blurRadius: 20,
+            offset: const Offset(0, -4),
           ),
         ],
-        currentIndex: currentIndex,
-        selectedItemColor: const Color(0xFF1F727E),
-        backgroundColor: Colors.white,
-        elevation: 0,
-        type: BottomNavigationBarType.fixed,
-        onTap: onPress,
+      ),
+      child: Padding(
+        padding: EdgeInsets.fromLTRB(
+          8,
+          8,
+          8,
+          8 + MediaQuery.of(context).padding.bottom,
+        ),
+        child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              _NavItem(
+                icon: Icons.school_rounded,
+                label: 'Learn',
+                isSelected: currentIndex == 0,
+                onTap: () => onPress(0),
+              ),
+              _NavItem(
+                icon: Icons.translate_rounded,
+                label: 'Script',
+                isSelected: currentIndex == 1,
+                onTap: () => onPress(1),
+              ),
+              _NavItem(
+                icon: Icons.person_rounded,
+                label: 'Profile',
+                isSelected: currentIndex == 2,
+                onTap: () => onPress(2),
+              ),
+              _NavItem(
+                icon: Icons.emoji_events_rounded,
+                label: 'Leagues',
+                isSelected: currentIndex == 3,
+                onTap: () => onPress(3),
+              ),
+              _NavItem(
+                icon: Icons.storefront_rounded,
+                label: 'Shop',
+                isSelected: currentIndex == 4,
+                onTap: () => onPress(4),
+              ),
+            ],
+          ),
+        ),
+    );
+  }
+}
+
+
+
+class _NavItem extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _NavItem({
+    required this.icon,
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      behavior: HitTestBehavior.opaque,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 200),
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? VarnamalaTheme.peacockTeal.withValues(alpha: 0.1)
+              : Colors.transparent,
+          borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              icon,
+              size: 26,
+              color: isSelected
+                  ? VarnamalaTheme.peacockTeal
+                  : VarnamalaTheme.textHint,
+            ),
+            const SizedBox(height: 2),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 11,
+                fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                color: isSelected
+                    ? VarnamalaTheme.peacockTeal
+                    : VarnamalaTheme.textHint,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

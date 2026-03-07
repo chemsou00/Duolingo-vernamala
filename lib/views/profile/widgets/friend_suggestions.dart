@@ -7,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 // Project imports:
 import 'package:words625/core/extensions.dart';
 import 'package:words625/views/profile/widgets/follow_button.dart';
+import 'package:words625/views/theme.dart';
 
 class FriendSuggestions extends StatelessWidget {
   const FriendSuggestions({Key? key}) : super(key: key);
@@ -14,40 +15,55 @@ class FriendSuggestions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const BigTitle(text: "Friend Suggestions"),
-        Container(
-          margin: const EdgeInsets.only(top: 15, left: 5),
-          padding: const EdgeInsets.only(top: 5),
-          height: context.height * 0.25,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
+          child: Row(
+            children: [
+              const Icon(Icons.person_add_rounded,
+                  color: VarnamalaTheme.peacockTeal, size: 22),
+              const SizedBox(width: 8),
+              Text(
+                'Friend Suggestions',
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+              ),
+            ],
+          ),
+        ),
+        SizedBox(
+          height: context.height * 0.22,
           child: StreamBuilder<QuerySnapshot>(
             stream: FirebaseFirestore.instance.collection('users').snapshots(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                    child: CircularProgressIndicator(
+                        color: VarnamalaTheme.peacockTeal, strokeWidth: 3));
               }
               if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(
-                    child: Text('No friend suggestions available'));
+                return Center(
+                  child: Text('No suggestions yet',
+                      style: Theme.of(context).textTheme.bodyMedium),
+                );
               }
               final friends = snapshot.data!.docs;
-
-              // shuffling to keep things interesting for now
               friends.shuffle();
 
               return ListView.builder(
                 scrollDirection: Axis.horizontal,
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 itemCount: friends.length,
                 itemBuilder: (context, index) {
                   final friendData =
                       friends[index].data() as Map<String, dynamic>;
-                  final targetUserId =
-                      friends[index].id; // User ID of the friend
+                  final targetUserId = friends[index].id;
 
-                  return FriendBox(
+                  return _FriendCard(
                     image: friendData['profileImage'] ?? 'default_image_url',
                     name: friendData['name'] ?? 'Anonymous',
-                    follower: friendData['follower'] ?? 'Unknown',
                     targetUserId: targetUserId,
                   );
                 },
@@ -60,39 +76,50 @@ class FriendSuggestions extends StatelessWidget {
   }
 }
 
-class FriendBox extends StatelessWidget {
+class _FriendCard extends StatelessWidget {
   final String image;
   final String name;
-  final String follower;
   final String targetUserId;
 
-  const FriendBox({
-    Key? key,
+  const _FriendCard({
     required this.image,
     required this.name,
-    required this.follower,
     required this.targetUserId,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 10),
-      padding: const EdgeInsets.all(5),
-      width: context.width * 0.40,
+      margin: const EdgeInsets.symmetric(horizontal: 4),
+      width: context.width * 0.36,
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          width: 2.5,
-          color: const Color(0xFFE5E5E5),
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
+        border: Border.all(color: const Color(0xFFEEF2F1)),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Avatar(image: image),
-          FriendName(name: name),
-          const Spacer(),
+          CircleAvatar(
+            backgroundImage: NetworkImage(image),
+            radius: 24,
+            backgroundColor:
+                VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+          ),
+          const SizedBox(height: 8),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: Text(
+              name,
+              style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+              textAlign: TextAlign.center,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+          const SizedBox(height: 8),
           FollowButton(
             targetUserId: targetUserId,
             targetUserName: name,
@@ -104,77 +131,19 @@ class FriendBox extends StatelessWidget {
   }
 }
 
-class Avatar extends StatelessWidget {
-  final String image;
-
-  const Avatar({Key? key, required this.image}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 5),
-      margin: const EdgeInsets.only(bottom: 10),
-      child: CircleAvatar(
-        backgroundImage: NetworkImage(image),
-        radius: 22,
-      ),
-    );
-  }
-}
-
-class FollowedBy extends StatelessWidget {
-  final String name;
-
-  const FollowedBy({Key? key, required this.name}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      'Followed by $name',
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Color(0xFFAFAFAF),
-        fontSize: 15,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-}
-
-class FriendName extends StatelessWidget {
-  final String name;
-
-  const FriendName({Key? key, required this.name}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      name,
-      style: const TextStyle(
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF4B4B4B),
-        fontSize: 17,
-      ),
-      textAlign: TextAlign.center,
-    );
-  }
-}
-
 class BigTitle extends StatelessWidget {
   final String text;
   const BigTitle({Key? key, required this.text}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.only(top: 20, left: 15),
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 20, 16, 8),
       child: Text(
         text,
-        style: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF4B4B4B),
-        ),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+            ),
       ),
     );
   }

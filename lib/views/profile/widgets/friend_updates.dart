@@ -1,42 +1,55 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Project imports:
+import 'package:words625/views/theme.dart';
+
 class FriendUpdates extends StatelessWidget {
   const FriendUpdates({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
-      margin: const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          width: 2.5,
-          color: const Color(0xFFE5E5E5),
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+        border: Border.all(color: const Color(0xFFEEF2F1)),
       ),
-      child: Row(
-        children: [
-          const Padding(padding: EdgeInsets.all(10)),
-          // Icon(Icons.celebration, size: 40, color: Color(0xFFFF4B4B)),
-          Image.asset(
-            'assets/images/celebrate.png',
-            width: 40,
-          ),
-          const Padding(padding: EdgeInsets.all(10)),
-          const Text(
-            'Friend updates',
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: Color(0xFF4B4B4B),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {},
+          borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+            child: Row(
+              children: [
+                Container(
+                  width: 40,
+                  height: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFFFF3E0),
+                    borderRadius:
+                        BorderRadius.circular(VarnamalaTheme.radiusSmall),
+                  ),
+                  child: const Icon(Icons.celebration_rounded,
+                      color: Color(0xFFFF9500), size: 22),
+                ),
+                const SizedBox(width: 14),
+                Text(
+                  'Friend updates',
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                const Spacer(),
+                const Icon(Icons.chevron_right_rounded,
+                    size: 22, color: VarnamalaTheme.textHint),
+              ],
             ),
           ),
-          const Spacer(),
-          const Icon(Icons.arrow_forward_ios, size: 20, color: Color(0xFFAFAFAF)),
-          const Padding(padding: EdgeInsets.all(10)),
-        ],
+        ),
       ),
     );
   }

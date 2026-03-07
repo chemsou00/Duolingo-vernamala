@@ -7,105 +7,81 @@ import 'package:contained_tab_bar_view/contained_tab_bar_view.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
-import 'package:words625/views/profile/widgets/widgets.dart';
+import 'package:words625/views/theme.dart';
 
 class SocialFriends extends StatelessWidget {
   const SocialFriends({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const BigTitle(text: 'Friends'),
-        Container(
-          margin:
-              const EdgeInsets.only(left: 15, right: 15, top: 10, bottom: 10),
-          height: 344,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(15),
-            border: Border.all(
-              width: 2.5,
-              color: const Color(0xFFE5E5E5),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.only(top: 20, bottom: 8),
+            child: Row(
+              children: [
+                const Icon(Icons.group_rounded,
+                    color: VarnamalaTheme.peacockTeal, size: 22),
+                const SizedBox(width: 8),
+                Text(
+                  'Friends',
+                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                ),
+              ],
             ),
           ),
-          child: ContainedTabBarView(
-            tabBarProperties: const TabBarProperties(
-              indicatorColor: Color(0xFF1CB0F6),
-              indicatorWeight: 3,
+          Container(
+            height: 320,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
+              border: Border.all(color: const Color(0xFFEEF2F1)),
             ),
-            tabs: const [
-              TabBarText(text: 'FOLLOWING'),
-              TabBarText(text: 'FOLLOWERS'),
-            ],
-            views: [
-              PaginatedFollowingList(
-                userId: FirebaseAuth.instance.currentUser!.uid,
+            child: ContainedTabBarView(
+              tabBarProperties: const TabBarProperties(
+                indicatorColor: VarnamalaTheme.peacockTeal,
+                indicatorWeight: 3,
+                labelColor: VarnamalaTheme.peacockTeal,
+                unselectedLabelColor: VarnamalaTheme.textHint,
               ),
-              PaginatedFollowersList(
-                userId: FirebaseAuth.instance.currentUser!.uid,
-              ),
-            ],
+              tabs: const [
+                _TabLabel(text: 'FOLLOWING'),
+                _TabLabel(text: 'FOLLOWERS'),
+              ],
+              views: [
+                PaginatedFollowingList(
+                  userId: FirebaseAuth.instance.currentUser!.uid,
+                ),
+                PaginatedFollowersList(
+                  userId: FirebaseAuth.instance.currentUser!.uid,
+                ),
+              ],
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
 
-class TabBarText extends StatelessWidget {
+class _TabLabel extends StatelessWidget {
   final String text;
-
-  const TabBarText({Key? key, required this.text}) : super(key: key);
+  const _TabLabel({required this.text});
 
   @override
   Widget build(BuildContext context) {
     return Text(
       text,
       style: const TextStyle(
-        color: Color(0xFF777777),
-        fontWeight: FontWeight.bold,
-        fontSize: 18,
+        fontWeight: FontWeight.w700,
+        fontSize: 14,
+        letterSpacing: 0.5,
       ),
-    );
-  }
-}
-
-class FollowersList extends StatelessWidget {
-  const FollowersList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: const [
-        FriendItem(
-            image: 'assets/images/profile.png', name: 'Wanda', xp: '314'),
-        FriendItem(
-            image: 'assets/images/profile.jpg', name: 'Marc', xp: '2012'),
-        FriendItem(
-            image: 'assets/images/white.png', name: 'Batman', xp: '10234'),
-        FriendItem(image: 'assets/images/cyan.png', name: 'Vinod', xp: '893'),
-      ],
-    );
-  }
-}
-
-class FollowingList extends StatelessWidget {
-  const FollowingList({Key? key}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return ListView(
-      shrinkWrap: true,
-      children: const [
-        FriendItem(
-            image: 'assets/images/white.png', name: 'Batman', xp: '10234'),
-        FriendItem(image: 'assets/images/cyan.png', name: 'Vinod', xp: '893'),
-        FriendItem(
-            image: 'assets/images/profile.png', name: 'Wanda', xp: '314'),
-        FriendItem(
-            image: 'assets/images/profile.jpg', name: 'Marc', xp: '2012'),
-      ],
     );
   }
 }
@@ -124,41 +100,38 @@ class FriendItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFE5E5E5)),
-      ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          Avatar(image: image),
-          const Padding(padding: EdgeInsets.all(5)),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              FriendName(name: name),
-              XpAmount(xp: xp),
-            ],
+          CircleAvatar(
+            backgroundImage: NetworkImage(image),
+            radius: 20,
+            backgroundColor:
+                VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  name,
+                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                ),
+                Text(
+                  '$xp XP',
+                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: VarnamalaTheme.textHint,
+                        fontWeight: FontWeight.w500,
+                      ),
+                ),
+              ],
+            ),
           ),
         ],
-      ),
-    );
-  }
-}
-
-class XpAmount extends StatelessWidget {
-  final String xp;
-
-  const XpAmount({Key? key, required this.xp}) : super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      '$xp XP',
-      style: const TextStyle(
-        fontSize: 15,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFFAFAFAF),
       ),
     );
   }
@@ -170,10 +143,10 @@ class PaginatedFollowersList extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PaginatedFollowersListState createState() => _PaginatedFollowersListState();
+  PaginatedFollowersListState createState() => PaginatedFollowersListState();
 }
 
-class _PaginatedFollowersListState extends State<PaginatedFollowersList> {
+class PaginatedFollowersListState extends State<PaginatedFollowersList> {
   final ScrollController _scrollController = ScrollController();
   final int _pageSize = 10;
   DocumentSnapshot? _lastDocument;
@@ -190,7 +163,6 @@ class _PaginatedFollowersListState extends State<PaginatedFollowersList> {
 
   Future<void> _fetchFollowers() async {
     if (_isLoadingMore || !_hasMore) return;
-
     setState(() => _isLoadingMore = true);
 
     Query query = FirebaseFirestore.instance
@@ -209,9 +181,7 @@ class _PaginatedFollowersListState extends State<PaginatedFollowersList> {
       setState(() {
         _lastDocument = snapshot.docs.last;
         _followers.addAll(snapshot.docs);
-        if (snapshot.docs.length < _pageSize) {
-          _hasMore = false;
-        }
+        if (snapshot.docs.length < _pageSize) _hasMore = false;
       });
     } else {
       _hasMore = false;
@@ -220,9 +190,7 @@ class _PaginatedFollowersListState extends State<PaginatedFollowersList> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.extentAfter < 200) {
-      _fetchFollowers();
-    }
+    if (_scrollController.position.extentAfter < 200) _fetchFollowers();
   }
 
   @override
@@ -233,22 +201,35 @@ class _PaginatedFollowersListState extends State<PaginatedFollowersList> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    if (_followers.isEmpty && !_isLoadingMore) {
+      return Center(
+        child: Text('No followers yet',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: VarnamalaTheme.textHint)),
+      );
+    }
+
+    return ListView.separated(
       controller: _scrollController,
-      itemCount: _followers.length + 1,
+      itemCount: _followers.length + (_isLoadingMore ? 1 : 0),
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, indent: 68, endIndent: 16),
       itemBuilder: (context, index) {
         if (index < _followers.length) {
-          final followerData = _followers[index].data() as Map<String, dynamic>;
+          final data = _followers[index].data() as Map<String, dynamic>;
           return FriendItem(
-            image: followerData['profileImage'],
-            name: followerData['name'],
+            image: data['profileImage'] ?? '',
+            name: data['name'] ?? 'Unknown',
             xp: 'N/A',
           );
-        } else if (_isLoadingMore) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return Container(); // Empty container at end of list
         }
+        return const Center(
+            child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: VarnamalaTheme.peacockTeal)));
       },
     );
   }
@@ -260,10 +241,10 @@ class PaginatedFollowingList extends StatefulWidget {
       : super(key: key);
 
   @override
-  _PaginatedFollowingListState createState() => _PaginatedFollowingListState();
+  PaginatedFollowingListState createState() => PaginatedFollowingListState();
 }
 
-class _PaginatedFollowingListState extends State<PaginatedFollowingList> {
+class PaginatedFollowingListState extends State<PaginatedFollowingList> {
   final ScrollController _scrollController = ScrollController();
   final int _pageSize = 10;
   DocumentSnapshot? _lastDocument;
@@ -280,7 +261,6 @@ class _PaginatedFollowingListState extends State<PaginatedFollowingList> {
 
   Future<void> _fetchFollowing() async {
     if (_isLoadingMore || !_hasMore) return;
-
     setState(() => _isLoadingMore = true);
 
     Query query = FirebaseFirestore.instance
@@ -299,9 +279,7 @@ class _PaginatedFollowingListState extends State<PaginatedFollowingList> {
       setState(() {
         _lastDocument = snapshot.docs.last;
         _following.addAll(snapshot.docs);
-        if (snapshot.docs.length < _pageSize) {
-          _hasMore = false;
-        }
+        if (snapshot.docs.length < _pageSize) _hasMore = false;
       });
     } else {
       _hasMore = false;
@@ -310,9 +288,7 @@ class _PaginatedFollowingListState extends State<PaginatedFollowingList> {
   }
 
   void _onScroll() {
-    if (_scrollController.position.extentAfter < 200) {
-      _fetchFollowing();
-    }
+    if (_scrollController.position.extentAfter < 200) _fetchFollowing();
   }
 
   @override
@@ -323,23 +299,35 @@ class _PaginatedFollowingListState extends State<PaginatedFollowingList> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
+    if (_following.isEmpty && !_isLoadingMore) {
+      return Center(
+        child: Text('Not following anyone yet',
+            style: Theme.of(context)
+                .textTheme
+                .bodyMedium
+                ?.copyWith(color: VarnamalaTheme.textHint)),
+      );
+    }
+
+    return ListView.separated(
       controller: _scrollController,
-      itemCount: _following.length + 1,
+      itemCount: _following.length + (_isLoadingMore ? 1 : 0),
+      separatorBuilder: (_, __) =>
+          const Divider(height: 1, indent: 68, endIndent: 16),
       itemBuilder: (context, index) {
         if (index < _following.length) {
-          final followingData =
-              _following[index].data() as Map<String, dynamic>;
+          final data = _following[index].data() as Map<String, dynamic>;
           return FriendItem(
-            image: followingData['profileImage'],
-            name: followingData['name'],
+            image: data['profileImage'] ?? '',
+            name: data['name'] ?? 'Unknown',
             xp: 'N/A',
           );
-        } else if (_isLoadingMore) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return Container(); // Empty container at end of list
         }
+        return const Center(
+            child: Padding(
+                padding: EdgeInsets.all(16),
+                child: CircularProgressIndicator(
+                    strokeWidth: 2, color: VarnamalaTheme.peacockTeal)));
       },
     );
   }

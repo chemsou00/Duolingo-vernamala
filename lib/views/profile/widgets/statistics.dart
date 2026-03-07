@@ -7,7 +7,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 // Project imports:
 import 'package:words625/core/extensions.dart';
-import 'package:words625/gen/assets.gen.dart';
+import 'package:words625/views/theme.dart';
 
 class Statistics extends StatefulWidget {
   const Statistics({Key? key}) : super(key: key);
@@ -51,132 +51,156 @@ class _StatisticsState extends State<Statistics> {
       }
     } catch (e) {
       setState(() => isLoading = false);
-      print("Error fetching user data: $e");
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        bigTitle('Statistics'),
-        if (languages.isNotEmpty) ...[
-          Padding(
-            padding: const EdgeInsets.only(left: 15, right: 15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "You are learning ${languages.length} ${languages.length == 1 ? 'language' : 'languages'}",
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                Wrap(
-                  children: languages
-                      .map((lang) => Card(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 8.0, horizontal: 12),
-                              child: Text(
-                                lang.toTitleCase,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ))
-                      .toList(),
-                ),
-              ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _sectionTitle(context, 'Statistics', Icons.bar_chart_rounded),
+          if (languages.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8,
+              runSpacing: 6,
+              children: languages
+                  .map((lang) => Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: VarnamalaTheme.peacockTeal
+                              .withValues(alpha: 0.08),
+                          borderRadius: BorderRadius.circular(
+                              VarnamalaTheme.radiusRound),
+                        ),
+                        child: Text(
+                          lang.toTitleCase,
+                          style: const TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: VarnamalaTheme.peacockTeal,
+                          ),
+                        ),
+                      ))
+                  .toList(),
             ),
+          ],
+          const SizedBox(height: 12),
+          GridView.count(
+            primary: false,
+            shrinkWrap: true,
+            crossAxisCount: 2,
+            crossAxisSpacing: 10,
+            mainAxisSpacing: 10,
+            childAspectRatio: 2.2,
+            children: [
+              _StatCard(
+                icon: Icons.local_fire_department_rounded,
+                iconColor: const Color(0xFFFF9500),
+                value: streak,
+                label: 'Day Streak',
+              ),
+              _StatCard(
+                icon: Icons.bolt_rounded,
+                iconColor: VarnamalaTheme.peacockTurquoise,
+                value: totalXp,
+                label: 'Total XP',
+              ),
+              _StatCard(
+                icon: Icons.shield_rounded,
+                iconColor: VarnamalaTheme.leagueAmethyst,
+                value: 'Pearl',
+                label: 'Current League',
+              ),
+              _StatCard(
+                icon: Icons.emoji_events_rounded,
+                iconColor: VarnamalaTheme.leagueGold,
+                value: '7',
+                label: 'Top 3 Finishes',
+              ),
+            ],
           ),
         ],
-        GridView.count(
-          primary: false,
-          shrinkWrap: true,
-          padding: const EdgeInsets.only(top: 10, left: 15, right: 15),
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          childAspectRatio: (1 / .4),
-          children: [
-            statBox(Assets.images.streak.path, streak, 'Day Streak'),
-            statBox(Assets.images.electric.path, totalXp, 'Total XP'),
-            statBox(Assets.images.pearl.path, 'Pearl', 'Current League'),
-            statBox(Assets.images.chest.path, '7', 'Top 3 Finishes'),
-          ],
-        ),
-      ],
+      ),
     );
   }
 
-  statBox(String iconImage, String record, String label) {
+  Widget _sectionTitle(BuildContext context, String text, IconData icon) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20, bottom: 8),
+      child: Row(
+        children: [
+          Icon(icon, color: VarnamalaTheme.peacockTeal, size: 22),
+          const SizedBox(width: 8),
+          Text(
+            text,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final Color iconColor;
+  final String value;
+  final String label;
+
+  const _StatCard({
+    required this.icon,
+    required this.iconColor,
+    required this.value,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.only(left: 12, top: 5, bottom: 5),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(15),
-        border: Border.all(
-          width: 2.5,
-          color: const Color(0xFFE5E5E5),
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+        border: Border.all(color: const Color(0xFFEEF2F1)),
       ),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Row(
             children: [
-              Image.asset(
-                iconImage,
-                width: 24,
-              ),
-              const Padding(
-                padding: EdgeInsets.all(7),
-              ),
-              Text(
-                record,
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4B4B4B),
+              Icon(icon, color: iconColor, size: 20),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  value,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
-          Row(
-            children: [
-              const Padding(padding: EdgeInsets.only(left: 38)),
-              Text(
-                label,
-                style: const TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFFAFAFAF),
-                ),
-              ),
-            ],
+          const SizedBox(height: 4),
+          Padding(
+            padding: const EdgeInsets.only(left: 28),
+            child: Text(
+              label,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                    color: VarnamalaTheme.textHint,
+                    fontWeight: FontWeight.w500,
+                  ),
+            ),
           ),
         ],
-      ),
-    );
-  }
-
-  bigTitle(String text) {
-    return Align(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        padding: const EdgeInsets.only(left: 15, top: 10, bottom: 10),
-        child: Text(
-          text,
-          style: const TextStyle(
-            fontSize: 25,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF4B4B4B),
-          ),
-        ),
       ),
     );
   }

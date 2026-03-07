@@ -14,6 +14,7 @@ import 'package:words625/views/home/components/components.dart';
 import 'package:words625/views/leaderboard/leaderboard_page.dart';
 import 'package:words625/views/profile/profile_screen.dart';
 import 'package:words625/views/shop/shop_screen.dart';
+import 'package:words625/views/theme.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -34,13 +35,11 @@ class _HomePageState extends State<HomePage> {
     const ProfilePage(),
     const LeaderboardPage(),
     const ShopPage(),
-    // const ExplorePage(),
   ];
 
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       initSession();
     });
@@ -61,12 +60,18 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: currentIndex == 0
+          ? VarnamalaTheme.scaffoldBackground
+          : Colors.white,
       appBar: appBars[currentIndex],
       bottomNavigationBar: BottomNavigator(
         currentIndex: currentIndex,
         onPress: onBottomNavigatorTapped,
       ),
-      body: screens[currentIndex],
+      body: AnimatedSwitcher(
+        duration: const Duration(milliseconds: 200),
+        child: screens[currentIndex],
+      ),
     );
   }
 

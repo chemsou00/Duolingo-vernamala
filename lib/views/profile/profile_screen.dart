@@ -9,20 +9,30 @@ class ProfilePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      appBar: AccountAppBar(),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            Padding(padding: EdgeInsets.all(10)),
-            FriendUpdates(),
-            Statistics(),
-            FriendSuggestions(),
-            SocialFriends(),
-            Achievements(),
-          ],
+    return CustomScrollView(
+      physics: const BouncingScrollPhysics(),
+      slivers: [
+        SliverToBoxAdapter(
+          child: _ProfileHeader(),
         ),
-      ),
+        const SliverToBoxAdapter(child: SizedBox(height: 8)),
+        const SliverToBoxAdapter(child: FriendUpdates()),
+        const SliverToBoxAdapter(child: Statistics()),
+        const SliverToBoxAdapter(child: FriendSuggestions()),
+        const SliverToBoxAdapter(child: SocialFriends()),
+        const SliverToBoxAdapter(child: Achievements()),
+        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+      ],
+    );
+  }
+}
+
+class _ProfileHeader extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+      child: AccountWidget(),
     );
   }
 }

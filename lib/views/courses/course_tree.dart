@@ -7,6 +7,7 @@ import 'package:provider/provider.dart';
 // Project imports:
 import 'package:words625/application/course_provider.dart';
 import 'package:words625/application/language_provider.dart';
+import 'package:words625/views/theme.dart';
 import 'components/course_node.dart';
 import 'components/double_course_node.dart';
 import 'components/triple_course_node.dart';
@@ -22,7 +23,6 @@ class _CourseTreeState extends State<CourseTree> {
   @override
   void initState() {
     super.initState();
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final language = context.read<LanguageProvider>().selectedLanguage;
       context.read<CourseProvider>().getCourses(language);
@@ -33,100 +33,96 @@ class _CourseTreeState extends State<CourseTree> {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        // Subtle sky-inspired gradient - elegant, not cartoonish
-        gradient: LinearGradient(
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFF8FCFF), // Very light blue-white at top
-            Color(0xFFF5FAFA), // Subtle teal tint
-            Color(0xFFF0F8F6), // Soft sage at bottom
-          ],
-          stops: [0.0, 0.5, 1.0],
-        ),
+        gradient: VarnamalaTheme.courseTreeGradient,
       ),
-      child: Stack(
-        children: [
-          // Main content
-          SingleChildScrollView(
+      child: Consumer<CourseProvider>(
+        builder: (context, courseState, _) {
+          final courses = courseState.courses;
+
+          if (courses == null) {
+            return const Center(child: _LoadingIndicator());
+          }
+
+          return CustomScrollView(
             physics: const BouncingScrollPhysics(),
-            child: Consumer<CourseProvider>(
-              builder: (context, courseState, _) {
-                final courses = courseState.courses;
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 24),
-                  child: Column(
-                    children: courses == null
-                        ? [
-                            const SizedBox(height: 100),
-                            const _LoadingIndicator(),
-                          ]
-                        : [
-                            ...courses.asMap().entries.map<Widget>((entry) {
-                              final index = entry.key;
-                              final courseGroup = entry.value;
-                              final isLast = index == courses.length - 1;
-                              
-                              Widget courseWidget;
-                              if (courseGroup.length == 1) {
-                                courseWidget = CourseNode(
-                                  courseGroup[0],
-                                  crown: 1,
-                                );
-                              } else if (courseGroup.length == 2) {
-                                courseWidget = DoubleCourseNode(
-                                  CourseNode(courseGroup[0], crown: 1),
-                                  CourseNode(courseGroup[1], crown: 1),
-                                );
-                              } else if (courseGroup.length == 3) {
-                                courseWidget = TripleCourseNode(
-                                  CourseNode(courseGroup[0]),
-                                  CourseNode(courseGroup[1]),
-                                  CourseNode(courseGroup[2]),
-                                );
-                              } else {
-                                courseWidget = Container();
-                              }
-                              
-                              return Column(
-                                children: [
-                                  courseWidget,
-                                  if (!isLast) _buildPathConnector(),
-                                ],
-                              );
-                            }),
-                            const SizedBox(height: 40),
-                          ],
+            slivers: [
+              SliverPadding(
+                padding: const EdgeInsets.only(top: 24, bottom: 40),
+                sliver: SliverList(
+                  delegate: SliverChildBuilderDelegate(
+                    (context, index) {
+                      // Even indices are course groups, odd indices are connectors
+                      final courseIndex = index ~/ 2;
+                      final isConnector = index.isOdd;
+
+                      if (isConnector) {
+                        if (courseIndex >= courses.length) {
+                          return const SizedBox.shrink();
+                        }
+                        return _buildPathConnector();
+                      }
+
+                      if (courseIndex >= courses.length) {
+                        return const SizedBox.shrink();
+                      }
+
+                      final courseGroup = courses[courseIndex];
+                      if (courseGroup.length == 1) {
+                        return CourseNode(courseGroup[0], crown: 1);
+                      } else if (courseGroup.length == 2) {
+                        return DoubleCourseNode(
+                          CourseNode(courseGroup[0], crown: 1),
+                          CourseNode(courseGroup[1], crown: 1),
+                        );
+                      } else if (courseGroup.length == 3) {
+                        return TripleCourseNode(
+                          CourseNode(courseGroup[0]),
+                          CourseNode(courseGroup[1]),
+                          CourseNode(courseGroup[2]),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    },
+                    childCount: courses.isEmpty ? 0 : courses.length * 2 - 1,
                   ),
-                );
-              },
-            ),
-          ),
-        ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   Widget _buildPathConnector() {
-    return Container(
-      width: 3,
-      height: 28,
-      margin: const EdgeInsets.symmetric(vertical: 4),
-      decoration: BoxDecoration(
-        color: const Color(0xFFD0D5DD),
-        borderRadius: BorderRadius.circular(2),
+    return Center(
+      child: Container(
+        width: 3,
+        height: 28,
+        margin: const EdgeInsets.symmetric(vertical: 4),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              VarnamalaTheme.peacockTeal.withValues(alpha: 0.3),
+              VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+            ],
+          ),
+          borderRadius: BorderRadius.circular(2),
+        ),
       ),
     );
   }
 }
 
-/// Animated loading indicator
 class _LoadingIndicator extends StatelessWidget {
   const _LoadingIndicator();
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         SizedBox(
           width: 40,
@@ -134,18 +130,17 @@ class _LoadingIndicator extends StatelessWidget {
           child: CircularProgressIndicator(
             strokeWidth: 3,
             valueColor: AlwaysStoppedAnimation<Color>(
-              const Color(0xFF1F727E).withOpacity(0.7),
+              VarnamalaTheme.peacockTeal.withValues(alpha: 0.7),
             ),
           ),
         ),
         const SizedBox(height: 16),
-        const Text(
+        Text(
           'Loading courses...',
-          style: TextStyle(
-            color: Color(0xFF6B7280),
-            fontSize: 14,
-            fontWeight: FontWeight.w500,
-          ),
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: VarnamalaTheme.textHint,
+                fontWeight: FontWeight.w500,
+              ),
         ),
       ],
     );

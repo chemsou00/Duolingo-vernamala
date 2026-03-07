@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:firebase_auth/firebase_auth.dart';
 // Project imports:
 import 'package:words625/core/extensions.dart';
 import 'package:words625/views/profile/widgets/follow_button.dart';

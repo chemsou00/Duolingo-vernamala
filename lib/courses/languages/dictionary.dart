@@ -11,11 +11,15 @@ Map<TargetLanguage, Map<String, String>> dictionary = {
   TargetLanguage.malayalam: malayalamDictionary,
   TargetLanguage.tamil: tamilDictionary,
   TargetLanguage.telugu: teluguDictionary,
+  TargetLanguage.hindi: hindiDictionary,
+  TargetLanguage.bengali: bengaliDictionary,
+  TargetLanguage.odia: odiaDictionary,
+  TargetLanguage.nepali: nepaliDictionary,
 };
 
 String getWordMeaning(String word) {
   final targetLanguage =
       getIt<AppPrefs>().currentLanguage.getValue().getEnumValue();
   logger.i("Dictionary for Line 18 : $targetLanguage");
-  return dictionary[targetLanguage]![word.trim().toLowerCase()] ?? "--";
+  return dictionary[targetLanguage]?[word.trim().toLowerCase()] ?? "--";
 }

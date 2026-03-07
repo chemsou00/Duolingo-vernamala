@@ -3,4 +3,8 @@ enum TargetLanguage {
   tamil,
   telugu,
   malayalam,
+  hindi,
+  bengali,
+  odia,
+  nepali,
 }

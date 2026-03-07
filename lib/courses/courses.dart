@@ -21,6 +21,18 @@ Future<List<List<dynamic>>> getCoursesData(
     case TargetLanguage.malayalam:
       data = getMalayalamData(firstName);
       break;
+    case TargetLanguage.hindi:
+      data = getHindiData(firstName);
+      break;
+    case TargetLanguage.bengali:
+      data = getBengaliData(firstName);
+      break;
+    case TargetLanguage.odia:
+      data = getOdiaData(firstName);
+      break;
+    case TargetLanguage.nepali:
+      data = getNepaliData(firstName);
+      break;
   }
 
   return data;

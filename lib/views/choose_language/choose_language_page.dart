@@ -79,6 +79,26 @@ class _LangChoicePageState extends State<LangChoicePage> {
                     flagAsset: Assets.images.malayalamFlag.path,
                     languageScript: 'മലയാളം',
                   ),
+                  LanguageOptionTile(
+                    targetLanguage: TargetLanguage.hindi,
+                    flagAsset: Assets.images.book.path,
+                    languageScript: 'हिन्दी',
+                  ),
+                  LanguageOptionTile(
+                    targetLanguage: TargetLanguage.bengali,
+                    flagAsset: Assets.images.book.path,
+                    languageScript: 'বাংলা',
+                  ),
+                  LanguageOptionTile(
+                    targetLanguage: TargetLanguage.odia,
+                    flagAsset: Assets.images.book.path,
+                    languageScript: 'ଓଡ଼ିଆ',
+                  ),
+                  LanguageOptionTile(
+                    targetLanguage: TargetLanguage.nepali,
+                    flagAsset: Assets.images.book.path,
+                    languageScript: 'नेपाली',
+                  ),
                 ],
               ),
             ),

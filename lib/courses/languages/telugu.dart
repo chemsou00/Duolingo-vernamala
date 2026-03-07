@@ -159,6 +159,42 @@ List<List<dynamic>> getTeluguData(String firstName) {
           // Additional levels would be formatted similarly.
         ]
       }
+    ],
+    [
+      {
+        "courseName": "food",
+        "image": Assets.images.egg.path,
+        "color": 0xffFFA500,
+        "levels": [
+          {
+            "level": 1,
+            "questions": [
+              {
+                "type": "multiple_choice",
+                "prompt": "Choose the word for Water",
+                "sentence": "Water",
+                "options": ["Neellu", "Paalu", "Annam"],
+                "correctAnswer": "Neellu",
+                "translatedSentence": "Water"
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Naaku aakali ga undi.",
+                "options": ["I am hungry.", "I am thirsty.", "I am tired."],
+                "correctAnswer": "I am hungry."
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Bhojanam ruchiga undi.",
+                "options": ["The food is tasty.", "The food is hot.", "The food is bad."],
+                "correctAnswer": "The food is tasty."
+              }
+            ]
+          }
+        ]
+      }
     ]
   ];
 }
@@ -202,5 +238,10 @@ Map<String, String> teluguDictionary = {
   "English": "English",
   "mataladuthara?": "Do you speak?",
   "mataladanu": "speak",
-  "ardham kaaledu": "I don't understand"
+  "ardham kaaledu": "I don't understand",
+  "Neellu": "Water",
+  "Paalu": "Milk",
+  "Annam": "Rice",
+  "Aakali": "Hungry",
+  "Ruchiga": "Tasty"
 };

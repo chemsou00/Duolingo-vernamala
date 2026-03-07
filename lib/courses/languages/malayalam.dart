@@ -159,6 +159,42 @@ List<List<dynamic>> getMalayalamData(String firstName) {
           // Additional levels would be formatted similarly.
         ]
       }
+    ],
+    [
+      {
+        "courseName": "food",
+        "image": Assets.images.egg.path,
+        "color": 0xffFFA500,
+        "levels": [
+          {
+            "level": 1,
+            "questions": [
+              {
+                "type": "multiple_choice",
+                "prompt": "Choose the word for Water",
+                "sentence": "Water",
+                "options": ["Vellam", "Paal", "Choru"],
+                "correctAnswer": "Vellam",
+                "translatedSentence": "Water"
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Enikku vishakunnu.",
+                "options": ["I am hungry.", "I am thirsty.", "I am tired."],
+                "correctAnswer": "I am hungry."
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Bhakshanam ruchikaramanu.",
+                "options": ["The food is tasty.", "The food is hot.", "The food is bad."],
+                "correctAnswer": "The food is tasty."
+              }
+            ]
+          }
+        ]
+      }
     ]
   ];
 }
@@ -202,5 +238,10 @@ Map<String, String> malayalamDictionary = {
   "English": "English",
   "samsarikkumo?": "Do you speak?",
   "samsarikkum": "speak",
-  "manasilakunnilla": "I don't understand"
+  "manasilakunnilla": "I don't understand",
+  "Vellam": "Water",
+  "Paal": "Milk",
+  "Choru": "Rice",
+  "Vishakunnu": "Hungry",
+  "Ruchi": "Tasty"
 };

@@ -1,6 +1,9 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Dart imports:
+import 'dart:math';
+
 // Package imports:
 import 'package:auto_route/annotations.dart';
 import 'package:chiclet/chiclet.dart';
@@ -169,6 +172,28 @@ class LevelPlayerChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const styles = [
+      _CelebrationStyle(
+        icon: Icons.celebration_rounded,
+        accent: VarnamalaTheme.peacockTurquoise,
+        title: 'Level Complete!',
+        subtitle: 'Brilliant focus. You cleared this level.',
+      ),
+      _CelebrationStyle(
+        icon: Icons.flash_on_rounded,
+        accent: VarnamalaTheme.warning,
+        title: 'That Was Fast!',
+        subtitle: 'You are climbing fast. Keep the streak alive.',
+      ),
+      _CelebrationStyle(
+        icon: Icons.auto_awesome_rounded,
+        accent: VarnamalaTheme.leagueAmethyst,
+        title: 'Excellent Work!',
+        subtitle: 'Every lesson gets you closer to mastery.',
+      ),
+    ];
+    final style = styles[Random().nextInt(styles.length)];
+
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius:
@@ -181,26 +206,25 @@ class LevelPlayerChoice extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color:
-                    VarnamalaTheme.peacockTurquoise.withValues(alpha: 0.1),
+                color: style.accent.withValues(alpha: 0.12),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.celebration_rounded,
-                color: VarnamalaTheme.peacockTurquoise,
+              child: Icon(
+                style.icon,
+                color: style.accent,
                 size: 40,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              "Level Complete!",
+              style.title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              "Great job on finishing this level.",
+              style.subtitle,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 28),
@@ -240,6 +264,28 @@ class CourseCompletionPlayerChoice extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    const styles = [
+      _CelebrationStyle(
+        icon: Icons.emoji_events_rounded,
+        accent: VarnamalaTheme.successDark,
+        title: 'Course Complete!',
+        subtitle: "You've mastered all the lessons.",
+      ),
+      _CelebrationStyle(
+        icon: Icons.workspace_premium_rounded,
+        accent: VarnamalaTheme.leagueRuby,
+        title: 'Legendary Finish!',
+        subtitle: 'That was a strong finish. Keep practicing.',
+      ),
+      _CelebrationStyle(
+        icon: Icons.star_rounded,
+        accent: VarnamalaTheme.peacockTeal,
+        title: 'Mastery Unlocked!',
+        subtitle: 'You completed the course with style.',
+      ),
+    ];
+    final style = styles[Random().nextInt(styles.length)];
+
     return Dialog(
       shape: RoundedRectangleBorder(
           borderRadius:
@@ -252,25 +298,25 @@ class CourseCompletionPlayerChoice extends StatelessWidget {
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: VarnamalaTheme.success.withValues(alpha: 0.15),
+                color: style.accent.withValues(alpha: 0.14),
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
-                Icons.emoji_events_rounded,
-                color: VarnamalaTheme.successDark,
+              child: Icon(
+                style.icon,
+                color: style.accent,
                 size: 40,
               ),
             ),
             const SizedBox(height: 20),
             Text(
-              "Course Complete!",
+              style.title,
               style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                   ),
             ),
             const SizedBox(height: 8),
             Text(
-              "You've mastered all the lessons.",
+              style.subtitle,
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 28),
@@ -303,4 +349,18 @@ class CourseCompletionPlayerChoice extends StatelessWidget {
       ),
     );
   }
+}
+
+class _CelebrationStyle {
+  final IconData icon;
+  final Color accent;
+  final String title;
+  final String subtitle;
+
+  const _CelebrationStyle({
+    required this.icon,
+    required this.accent,
+    required this.title,
+    required this.subtitle,
+  });
 }

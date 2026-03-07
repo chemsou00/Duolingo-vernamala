@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
@@ -52,15 +53,51 @@ class _LeaderboardPageState extends State<LeaderboardPage>
   }
 }
 
-class _LeagueLeaderboardList extends StatelessWidget {
+class _LeagueLeaderboardList extends StatefulWidget {
   final String league;
 
   const _LeagueLeaderboardList({required this.league});
 
   @override
+  State<_LeagueLeaderboardList> createState() => _LeagueLeaderboardListState();
+}
+
+class _LeagueLeaderboardListState extends State<_LeagueLeaderboardList> {
+  int? _previousRank;
+  int? _currentRank;
+  bool _showRankClimb = false;
+
+  void _updateRank(List<LeaderboardEntry> users) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+
+    final rank = users.indexWhere((user) => user.userId == uid);
+    if (rank == -1) return;
+    final oneBasedRank = rank + 1;
+
+    if (_previousRank != null && oneBasedRank < _previousRank!) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        setState(() {
+          _currentRank = oneBasedRank;
+          _showRankClimb = true;
+        });
+        Future.delayed(const Duration(seconds: 2), () {
+          if (!mounted) return;
+          setState(() => _showRankClimb = false);
+        });
+      });
+    } else {
+      _currentRank = oneBasedRank;
+    }
+
+    _previousRank = oneBasedRank;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<LeaderboardEntry>>(
-      stream: context.read<LeagueProvider>().getLeagueLeaderboard(league),
+      stream: context.read<LeagueProvider>().getLeagueLeaderboard(widget.league),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -72,10 +109,11 @@ class _LeagueLeaderboardList extends StatelessWidget {
         }
 
         final users = snapshot.data ?? const <LeaderboardEntry>[];
+        _updateRank(users);
         if (users.isEmpty) {
           return Center(
             child: Text(
-              'No users in ${league.toTitleCase} yet',
+              'No users in ${widget.league.toTitleCase} yet',
               style: Theme.of(context)
                   .textTheme
                   .bodyLarge
@@ -84,16 +122,67 @@ class _LeagueLeaderboardList extends StatelessWidget {
           );
         }
 
-        return ListView.builder(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
-          itemCount: users.length,
-          itemBuilder: (context, index) {
-            final user = users[index];
-            return _LeaderboardTile(rank: index + 1, user: user);
-          },
+        return Stack(
+          children: [
+            ListView.builder(
+              physics: const BouncingScrollPhysics(),
+              padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+              itemCount: users.length,
+              itemBuilder: (context, index) {
+                final user = users[index];
+                return _LeaderboardTile(rank: index + 1, user: user);
+              },
+            ),
+            Align(
+              alignment: Alignment.topCenter,
+              child: AnimatedSlide(
+                offset: _showRankClimb ? Offset.zero : const Offset(0, -1.4),
+                duration: const Duration(milliseconds: 360),
+                curve: Curves.easeOutBack,
+                child: AnimatedOpacity(
+                  opacity: _showRankClimb ? 1 : 0,
+                  duration: const Duration(milliseconds: 280),
+                  child: _RankClimbCard(rank: _currentRank ?? 0),
+                ),
+              ),
+            ),
+          ],
         );
       },
+    );
+  }
+}
+
+class _RankClimbCard extends StatelessWidget {
+  final int rank;
+
+  const _RankClimbCard({required this.rank});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(top: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
+        border: Border.all(color: VarnamalaTheme.success.withValues(alpha: 0.5)),
+        boxShadow: VarnamalaTheme.softShadow,
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.trending_up_rounded, color: VarnamalaTheme.successDark),
+          const SizedBox(width: 8),
+          Text(
+            'You climbed to #$rank',
+            style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                  color: VarnamalaTheme.successDark,
+                  fontWeight: FontWeight.w700,
+                ),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,7 +1,7 @@
 // Project imports:
 import 'package:words625/gen/assets.gen.dart';
 
-List<List<dynamic>> getTamilData(String firstName) {
+List<List<dynamic>> getNepaliData(String firstName) {
   return [
     [
       {
@@ -15,20 +15,20 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "multiple_choice",
                 "prompt": "Choose an appropriate response",
-                "sentence": "Un peyar enna?",
+                "sentence": "Timro naam k ho?",
                 "sentenceIsTargetLanguage": true,
                 "options": [
-                  "En peyar $firstName.",
-                  "Naan kattrukkondirukkiren.",
-                  "Enakku theriyathu."
+                  "Mero naam $firstName ho.",
+                  "Ma bidyarthi hu.",
+                  "Malai thaha chaina."
                 ],
-                "correctAnswer": "En peyar $firstName.",
-                "translatedSentence": "My name is $firstName"
+                "correctAnswer": "Mero naam $firstName ho.",
+                "translatedSentence": "My name is $firstName."
               },
               {
                 "type": "translate",
                 "prompt": "Translate the sentence",
-                "sentence": "Naan oru maanavan.",
+                "sentence": "Ma bidyarthi hu.",
                 "sentenceIsTargetLanguage": true,
                 "options": [
                   "I am a student.",
@@ -40,7 +40,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate the sentence",
-                "sentence": "Naan saappidugiren.",
+                "sentence": "Ma khadai chu.",
                 "sentenceIsTargetLanguage": true,
                 "options": ["I am eating.", "I am walking.", "I am sitting."],
                 "correctAnswer": "I am eating."
@@ -48,7 +48,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate the sentence",
-                "sentence": "Naan naalai varuven.",
+                "sentence": "Bholi aauchu.",
                 "sentenceIsTargetLanguage": true,
                 "options": [
                   "I will come tomorrow.",
@@ -60,15 +60,76 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "multiple_choice",
                 "prompt": "Choose an appropriate response",
-                "sentence": "Nee eppadi irukkirai?",
+                "sentence": "Kaso chau?",
+                "sentenceIsTargetLanguage": true,
+                "options": ["Ma thik chu.", "Malai thaha chaina.", "Mero naam $firstName."],
+                "correctAnswer": "Ma thik chu.",
+                "translatedSentence": "I am fine."
+              }
+            ]
+          },
+          {
+            "level": 2,
+            "questions": [
+              {
+                "type": "multiple_choice",
+                "prompt": "Choose an appropriate response",
+                "sentence": "Timi kaha baschau?",
                 "sentenceIsTargetLanguage": true,
                 "options": [
-                  "Naan nandraga irukkiren.",
-                  "Enakku theriyathu.",
-                  "En peyar Vidya."
+                  "Ma Kathmandu ma baschu.",
+                  "Malai thaha chaina.",
+                  "Bholi aauchu."
                 ],
-                "correctAnswer": "Naan nandraga irukkiren.",
-                "translatedSentence": "I am fine"
+                "correctAnswer": "Ma Kathmandu ma baschu."
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Uha mero bhai ho.",
+                "sentenceIsTargetLanguage": true,
+                "options": [
+                  "He is my friend.",
+                  "He is my younger brother.",
+                  "He is my cousin."
+                ],
+                "correctAnswer": "He is my younger brother."
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Uha mero dai ho.",
+                "sentenceIsTargetLanguage": true,
+                "options": [
+                  "He is my friend.",
+                  "He is my elder brother.",
+                  "He is my cousin."
+                ],
+                "correctAnswer": "He is my elder brother."
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Malai Nepali aaucha.",
+                "sentenceIsTargetLanguage": true,
+                "options": [
+                  "I know Nepali.",
+                  "I speak Nepali.",
+                  "I am learning Nepali."
+                ],
+                "correctAnswer": "I know Nepali."
+              },
+              {
+                "type": "multiple_choice",
+                "prompt": "Choose an appropriate response",
+                "sentence": "Coffee khanuhuncha?",
+                "sentenceIsTargetLanguage": true,
+                "options": [
+                  "Hajur, coffee khanchu.",
+                  "Nai, ma coffee khadinna.",
+                  "Chiya khanchu."
+                ],
+                "correctAnswer": "Hajur, coffee khanchu."
               }
             ]
           }
@@ -88,24 +149,24 @@ List<List<dynamic>> getTamilData(String firstName) {
                 "type": "multiple_choice",
                 "prompt": "Choose the correct greeting",
                 "sentence": "Hello",
-                "options": ["Vanakkam", "Nandri", "Poittu varen"],
-                "correctAnswer": "Vanakkam",
+                "options": ["Namaste", "Bida", "Dhanyabad"],
+                "correctAnswer": "Namaste",
                 "translatedSentence": "Hello"
               },
               {
                 "type": "translate",
                 "prompt": "Translate to English",
-                "sentence": "Vaanga",
+                "sentence": "Swagatam",
                 "sentenceIsTargetLanguage": true,
-                "options": ["Welcome / Come in", "Go away", "Eat well"],
-                "correctAnswer": "Welcome / Come in"
+                "options": ["Welcome", "Goodbye", "Thank you"],
+                "correctAnswer": "Welcome"
               },
               {
                 "type": "translate",
-                "prompt": "Translate to Tamil",
+                "prompt": "Translate to Nepali",
                 "sentence": "Good Morning",
-                "options": ["Kaalai Vanakkam", "Iravu Vanakkam", "Nandri"],
-                "correctAnswer": "Kaalai Vanakkam"
+                "options": ["Subha Prabhat", "Subha Ratri", "Namaste"],
+                "correctAnswer": "Subha Prabhat"
               }
             ]
           }
@@ -124,7 +185,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'My name is ...'",
-                "sentence": "En peyar ...",
+                "sentence": "Mero naam ... ho",
                 "sentenceIsTargetLanguage": true,
                 "options": ["My name is ...", "I am ...", "Who are you?"],
                 "correctAnswer": "My name is ..."
@@ -146,7 +207,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'Dog'",
-                "sentence": "Naai",
+                "sentence": "Kukur",
                 "sentenceIsTargetLanguage": true,
                 "options": ["Dog", "Cat", "Cow"],
                 "correctAnswer": "Dog"
@@ -154,7 +215,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'Cat'",
-                "sentence": "Poonai",
+                "sentence": "Biralo",
                 "sentenceIsTargetLanguage": true,
                 "options": ["Cat", "Dog", "Mouse"],
                 "correctAnswer": "Cat"
@@ -174,7 +235,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'Red'",
-                "sentence": "Sigappu",
+                "sentence": "Rato",
                 "sentenceIsTargetLanguage": true,
                 "options": ["Red", "Blue", "Green"],
                 "correctAnswer": "Red"
@@ -186,7 +247,7 @@ List<List<dynamic>> getTamilData(String firstName) {
     ],
     [
       {
-        "courseName": "Life in Chennai",
+        "courseName": "Life in Kathmandu",
         "image": Assets.images.bandages.path,
         "color": 0xff00FF00,
         "levels": [
@@ -195,27 +256,19 @@ List<List<dynamic>> getTamilData(String firstName) {
             "questions": [
               {
                 "type": "translate",
-                "prompt": "Ask 'Will you go?'",
-                "sentence": "Anna, povigala?",
-                "sentenceIsTargetLanguage": true,
-                "options": ["Brother, will you go?", "Where are you going?", "How much?"],
-                "correctAnswer": "Brother, will you go?"
-              },
-              {
-                "type": "translate",
                 "prompt": "Ask 'How much?'",
-                "sentence": "Evvalavu aachu?",
+                "sentence": "Kati paisa?",
                 "sentenceIsTargetLanguage": true,
-                "options": ["How much?", "What time?", "Where?"],
-                "correctAnswer": "How much?"
+                "options": ["How much money?", "What time?", "Where?"],
+                "correctAnswer": "How much money?"
               },
               {
                 "type": "translate",
                 "prompt": "Direction",
-                "sentence": "Marina Beach poyidu.",
+                "sentence": "Thamel jane?",
                 "sentenceIsTargetLanguage": true,
-                "options": ["Go to Marina Beach.", "Where is Marina Beach?", "Is this Marina Beach?"],
-                "correctAnswer": "Go to Marina Beach."
+                "options": ["Will you go to Thamel?", "Where is Thamel?", "Is this Thamel?"],
+                "correctAnswer": "Will you go to Thamel?"
               }
             ]
           }
@@ -234,7 +287,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'I am busy'",
-                "sentence": "Naan busy-a irukken.",
+                "sentence": "Ma busy chu.",
                 "sentenceIsTargetLanguage": true,
                 "options": ["I am busy.", "I am free.", "I am tired."],
                 "correctAnswer": "I am busy."
@@ -254,7 +307,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'One'",
-                "sentence": "Ondru",
+                "sentence": "Ek",
                 "sentenceIsTargetLanguage": true,
                 "options": ["One", "Two", "Three"],
                 "correctAnswer": "One"
@@ -262,7 +315,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'Two'",
-                "sentence": "Irandu",
+                "sentence": "Dui",
                 "sentenceIsTargetLanguage": true,
                 "options": ["Two", "Three", "Four"],
                 "correctAnswer": "Two"
@@ -282,7 +335,7 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'I am happy'",
-                "sentence": "Naan santhoshama irukken.",
+                "sentence": "Ma khushi chu.",
                 "sentenceIsTargetLanguage": true,
                 "options": ["I am happy.", "I am sad.", "I am angry."],
                 "correctAnswer": "I am happy."
@@ -304,10 +357,10 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Order food",
-                "sentence": "Oru Idli Sambhar kudunga.",
+                "sentence": "Ek plate Momo dinu.",
                 "sentenceIsTargetLanguage": true,
-                "options": ["Give me one Idli Sambhar.", "I like Idli Sambhar.", "Where is Idli Sambhar?"],
-                "correctAnswer": "Give me one Idli Sambhar."
+                "options": ["Give me one plate Momo.", "I like Momo.", "Where is Momo?"],
+                "correctAnswer": "Give me one plate Momo."
               }
             ]
           }
@@ -324,10 +377,10 @@ List<List<dynamic>> getTamilData(String firstName) {
               {
                 "type": "translate",
                 "prompt": "Translate 'Rain'",
-                "sentence": "Mazhai",
+                "sentence": "Paani paryo",
                 "sentenceIsTargetLanguage": true,
-                "options": ["Rain", "Sun", "Wind"],
-                "correctAnswer": "Rain"
+                "options": ["It rained", "It is sunny", "It is windy"],
+                "correctAnswer": "It rained"
               }
             ]
           }
@@ -343,11 +396,11 @@ List<List<dynamic>> getTamilData(String firstName) {
             "questions": [
               {
                 "type": "translate",
-                "prompt": "Translate 'Train'",
-                "sentence": "Rayil",
+                "prompt": "Translate 'Bus'",
+                "sentence": "Bus",
                 "sentenceIsTargetLanguage": true,
-                "options": ["Train", "Bus", "Car"],
-                "correctAnswer": "Train"
+                "options": ["Bus", "Train", "Car"],
+                "correctAnswer": "Bus"
               }
             ]
           }
@@ -357,58 +410,39 @@ List<List<dynamic>> getTamilData(String firstName) {
   ];
 }
 
-Map<String, String> tamilDictionary = {
-  "Unkal": "Your",
-  "peyar": "name",
-  "enna?": "what?",
-  "En": "My",
-  "Naan": "I",
-  "manavan": "student",
-  "saapadu": "food",
-  "saapiduven": "eating",
-  "Naalai": "tomorrow",
-  "varuven": "will come",
-  "Sugam?": "Are you fine?",
-  "Sugam": "Fine",
-  "Enakku": "I",
-  "theriyala": "don't know",
-  "oor": "place/village",
-  "enge": "where?",
-  "Avan": "He",
-  "en": "my",
-  "thambi": "younger brother",
-  "anna": "elder brother",
-  "Neenga": "You (polite)",
-  "povinga": "going",
-  "veetukku": "home",
-  "inge": "here",
-  "Theriyum": "I know",
-  "Coffee": "Coffee",
-  "venuma?": "want?",
-  "Ama": "Yes",
-  "venum": "I want",
-  "illa": "No",
-  "kudika maaten": "do not drink",
-  "Tea": "Tea",
-  "Inru": "Today",
-  "magan": "son",
-  "vandhan": "came",
-  "English": "English",
-  "pesuveergala?": "Do you speak?",
-  "pesuven": "speak",
-  "puriyala": "I don't understand",
-  "Thanni": "Water",
-  "Paal": "Milk",
-  "Saapadu": "Food",
-  "Pasikkirathu": "Hungry",
-  "Rusi": "Tasty",
-  "Vanakkam": "Hello",
-  "Nandri": "Thank you",
-  "Vaanga": "Welcome",
-  "Mazhai": "Rain",
-  "Sigappu": "Red",
-  "Naai": "Dog",
-  "Poonai": "Cat",
-  "Ondru": "One"
+Map<String, String> nepaliDictionary = {
+  "Timro": "Your",
+  "naam": "name",
+  "k": "what",
+  "Mero": "My",
+  "Ma": "I",
+  "bidyarthi": "student",
+  "khadai": "eating",
+  "Bholi": "tomorrow",
+  "aauchu": "will come",
+  "Kaso": "How",
+  "chau": "are (you)",
+  "thik": "fine",
+  "thaha chaina": "don't know",
+  "kaha": "where",
+  "baschau": "stay/live",
+  "Uha": "He/She",
+  "bhai": "younger brother",
+  "dai": "elder brother",
+  "aaucha": "know/comes",
+  "khanuhuncha": "eat/drink (honorific)",
+  "Hajur": "Yes (polite)",
+  "Nai": "No",
+  "Chiya": "Tea",
+  "Namaste": "Hello",
+  "Dhanyabad": "Thank you",
+  "Swagatam": "Welcome",
+  "Subha": "Good",
+  "Prabhat": "Morning",
+  "Ratri": "Night",
+  "Kukur": "Dog",
+  "Biralo": "Cat",
+  "Rato": "Red",
+  "Kati": "How much"
 };
 

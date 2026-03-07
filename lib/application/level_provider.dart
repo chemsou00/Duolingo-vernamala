@@ -73,10 +73,18 @@ class LessonProvider with ChangeNotifier {
   // Function to set the current course and reset progress
   void setCourse(Course course) {
     _currentCourse = course;
-    _currentLevelIndex = getIt<AppPrefs>()
+    final storedProgress = getIt<AppPrefs>()
         .preferences
         .getInt(currentCourse!.courseName, defaultValue: 0)
         .getValue();
+    final totalLevels = currentCourse?.levels?.length ?? 0;
+    if (totalLevels == 0) {
+      _currentLevelIndex = 0;
+    } else {
+      _currentLevelIndex = storedProgress >= totalLevels
+          ? totalLevels - 1
+          : storedProgress.clamp(0, totalLevels - 1);
+    }
     _currentQuestionIndex = 0;
     _isAnswerCorrect = false;
     _hasSelectedAnswer = false;
@@ -136,6 +144,12 @@ class LessonProvider with ChangeNotifier {
       );
     } else {
       // Reached the end of the course
+      final totalLevels = _currentCourse?.levels?.length ?? 0;
+      if (totalLevels > 0) {
+        await getIt<AppPrefs>()
+            .preferences
+            .setInt(currentCourse!.courseName, totalLevels);
+      }
       _currentLevelIndex = 0;
       _currentQuestionIndex = 0;
       await _onLessonCompleted();

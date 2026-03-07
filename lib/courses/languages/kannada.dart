@@ -2321,6 +2321,48 @@ List<List<dynamic>> getKannadaData(String firstName) {
           }
         ]
       },
+      {
+        "courseName": "travel",
+        "image": Assets.images.egg.path,
+        "color": 0xffFFA500,
+        "levels": [
+          {
+            "level": 1,
+            "questions": [
+              {
+                "type": "multiple_choice",
+                "prompt": "Choose the word for Bus",
+                "sentence": "Bus",
+                "options": ["Bus", "Railu", "Vimaana"],
+                "correctAnswer": "Bus",
+                "translatedSentence": "Bus"
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Bus stand ellide?",
+                "options": [
+                  "Where is the bus stand?",
+                  "Where is the train station?",
+                  "Where is the airport?"
+                ],
+                "correctAnswer": "Where is the bus stand?"
+              },
+              {
+                "type": "translate",
+                "prompt": "Translate the sentence",
+                "sentence": "Ticket eshtu?",
+                "options": [
+                  "How much is the ticket?",
+                  "Where is the ticket?",
+                  "I want a ticket."
+                ],
+                "correctAnswer": "How much is the ticket?"
+              }
+            ]
+          }
+        ]
+      }
     ]
   ];
 }
@@ -2437,4 +2479,7 @@ Map<String, String> kannadaDictionary = {
   "saakbohuda": "allowed",
   "mugisi": "finished",
   "bega": "fast",
+  "ellide": "where is",
+  "Railu": "Train",
+  "Vimaana": "Plane"
 };

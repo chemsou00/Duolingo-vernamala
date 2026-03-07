@@ -21,6 +21,7 @@ import 'package:words625/service/locator.dart';
 @injectable
 class MatchProvider extends ChangeNotifier {
   final AudioController _audioController;
+  final Random _random = Random();
 
   MatchProvider(this._audioController);
 
@@ -35,18 +36,19 @@ class MatchProvider extends ChangeNotifier {
   Map<String, String>? wordPairs;
   bool isGameOver = false;
   int sessionScore = 0;
+  int roundsCompleted = 0;
+  int currentRoundMatches = 0;
+  bool isRoundTransitioning = false;
+  MatchCelebrationType celebrationType = MatchCelebrationType.sparkles;
+  int matchesPerRound = 8;
+  List<MapEntry<String, String>> _dictionaryEntries = [];
 
   void initializeGame() {
-    wordPairs = getRandomWords(8);
+    final targetLanguage =
+        getIt<AppPrefs>().currentLanguage.getValue().getEnumValue();
+    _dictionaryEntries = wordsMap[targetLanguage]!.entries.toList(growable: false);
 
-    logger.i("Word Pairs: $wordPairs");
-    englishWords = wordPairs!.keys.toList()..shuffle();
-    targetWords = wordPairs!.values.toList()..shuffle();
-
-    // log
-    logger.i("English Words: $englishWords");
-    logger.i("Target Words: $targetWords");
-
+    _setupRound();
     matchedPairs = {};
     selectedEnglishWord = null;
     selectedTargetWord = null;
@@ -54,17 +56,19 @@ class MatchProvider extends ChangeNotifier {
     matchedWords = {};
     isGameOver = false;
     sessionScore = 0;
+    roundsCompleted = 0;
+    currentRoundMatches = 0;
+    isRoundTransitioning = false;
+    celebrationType = MatchCelebrationType.values[Random().nextInt(
+      MatchCelebrationType.values.length,
+    )];
     notifyListeners();
 
     startTimer();
   }
 
   Map<String, String> getRandomWords(int count) {
-    final targetLanguage =
-        getIt<AppPrefs>().currentLanguage.getValue().getEnumValue();
-
-    final List<MapEntry<String, String>> entries =
-        wordsMap[targetLanguage]!.entries.toList();
+    final List<MapEntry<String, String>> entries = List.of(_dictionaryEntries);
     entries.shuffle(Random());
     return Map.fromEntries(entries.take(count));
   }
@@ -78,18 +82,23 @@ class MatchProvider extends ChangeNotifier {
       } else {
         _timer?.cancel();
         isGameOver = true;
+        celebrationType = MatchCelebrationType.values[Random().nextInt(
+          MatchCelebrationType.values.length,
+        )];
         notifyListeners();
       }
     });
   }
 
   void selectEnglishWord(String word) {
+    if (isRoundTransitioning || isGameOver) return;
     selectedEnglishWord = word;
     checkMatch();
     notifyListeners();
   }
 
   void selectTargetWord(String word) {
+    if (isRoundTransitioning || isGameOver) return;
     selectedTargetWord = word;
     checkMatch();
     notifyListeners();
@@ -99,6 +108,7 @@ class MatchProvider extends ChangeNotifier {
     if (selectedEnglishWord != null && selectedTargetWord != null) {
       if (wordPairs![selectedEnglishWord!] == selectedTargetWord) {
         sessionScore += 2;
+        currentRoundMatches += 1;
         _audioController.playRandomLevelUpSound();
         matchedPairs[selectedEnglishWord!] = selectedTargetWord!;
         notifyListeners();
@@ -106,14 +116,15 @@ class MatchProvider extends ChangeNotifier {
         // Wait for animation
         await Future.delayed(const Duration(milliseconds: 500));
 
-        matchedWords.add(selectedEnglishWord!);
-        matchedWords.add(selectedTargetWord!);
+        final matchedEnglish = selectedEnglishWord!;
+        final matchedTarget = selectedTargetWord!;
+        _replaceMatchedPair(matchedEnglish, matchedTarget);
         selectedEnglishWord = null;
         selectedTargetWord = null;
 
-        if (matchedWords.length == englishWords.length * 2) {
-          _timer?.cancel();
-          isGameOver = true;
+        if (currentRoundMatches >= matchesPerRound) {
+          roundsCompleted += 1;
+          await _loadNextRound();
         }
 
         notifyListeners();
@@ -131,4 +142,61 @@ class MatchProvider extends ChangeNotifier {
     _timer?.cancel();
     super.dispose();
   }
+
+  void _setupRound() {
+    wordPairs = getRandomWords(8);
+    englishWords = wordPairs!.keys.toList()..shuffle();
+    targetWords = wordPairs!.values.toList()..shuffle();
+
+    logger.i("Word Pairs: $wordPairs");
+    logger.i("English Words: $englishWords");
+    logger.i("Target Words: $targetWords");
+  }
+
+  Future<void> _loadNextRound() async {
+    isRoundTransitioning = true;
+    notifyListeners();
+
+    await Future.delayed(const Duration(milliseconds: 650));
+    matchedPairs.clear();
+    currentRoundMatches = 0;
+    isRoundTransitioning = false;
+    notifyListeners();
+  }
+
+  void _replaceMatchedPair(String english, String target) {
+    englishWords.remove(english);
+    targetWords.remove(target);
+    wordPairs?.remove(english);
+
+    final replacement = _drawReplacementPair();
+    wordPairs?[replacement.key] = replacement.value;
+    englishWords.add(replacement.key);
+    targetWords.add(replacement.value);
+    englishWords.shuffle(_random);
+    targetWords.shuffle(_random);
+  }
+
+  MapEntry<String, String> _drawReplacementPair() {
+    final englishInPlay = englishWords.toSet();
+    final targetInPlay = targetWords.toSet();
+
+    final candidates = _dictionaryEntries.where((entry) {
+      return !englishInPlay.contains(entry.key) &&
+          !targetInPlay.contains(entry.value);
+    }).toList(growable: false);
+
+    if (candidates.isNotEmpty) {
+      return candidates[_random.nextInt(candidates.length)];
+    }
+
+    // Fallback: if the dictionary is too small, still keep gameplay flowing.
+    return _dictionaryEntries[_random.nextInt(_dictionaryEntries.length)];
+  }
+}
+
+enum MatchCelebrationType {
+  sparkles,
+  trophy,
+  lightning,
 }

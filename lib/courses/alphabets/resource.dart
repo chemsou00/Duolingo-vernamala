@@ -12,6 +12,14 @@ Map<String, String> getLanguageSounds(TargetLanguage language) {
       return tamilSounds;
     case TargetLanguage.malayalam:
       return malayalamSounds;
+    case TargetLanguage.hindi:
+      return hindiSounds;
+    case TargetLanguage.bengali:
+      return bengaliSounds;
+    case TargetLanguage.odia:
+      return odiaSounds;
+    case TargetLanguage.nepali:
+      return nepaliSounds;
     default:
       return {};
   }
@@ -27,6 +35,14 @@ Map<String, String> getLanguageVowels(TargetLanguage language) {
       return tamilVowels;
     case TargetLanguage.malayalam:
       return malayalamVowels;
+    case TargetLanguage.hindi:
+      return hindiVowels;
+    case TargetLanguage.bengali:
+      return bengaliVowels;
+    case TargetLanguage.odia:
+      return odiaVowels;
+    case TargetLanguage.nepali:
+      return nepaliVowels;
     default:
       return {};
   }
@@ -42,6 +58,14 @@ Map<String, String> getLanguageConsonants(TargetLanguage language) {
       return tamilConsonants;
     case TargetLanguage.malayalam:
       return malayalamConsonants;
+    case TargetLanguage.hindi:
+      return hindiConsonants;
+    case TargetLanguage.bengali:
+      return bengaliConsonants;
+    case TargetLanguage.odia:
+      return odiaConsonants;
+    case TargetLanguage.nepali:
+      return nepaliConsonants;
     default:
       return {};
   }

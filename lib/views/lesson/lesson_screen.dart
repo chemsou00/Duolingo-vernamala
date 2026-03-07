@@ -66,7 +66,7 @@ class LessonPageState extends State<LessonPage> {
         builder: (context) {
           switch (lessonAvailability) {
             case LessonAvailability.loading:
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(
                   color: VarnamalaTheme.peacockTeal,
                   strokeWidth: 3,

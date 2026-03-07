@@ -6,6 +6,9 @@ import 'package:auto_route/annotations.dart';
 import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:words625/application/game_provider.dart';
+import 'package:words625/application/gems_provider.dart';
+import 'package:words625/application/hearts_provider.dart';
 import 'package:words625/application/language_provider.dart';
 import 'package:words625/views/characters/character_drawing.dart';
 import 'package:words625/views/characters/characters_app_bar.dart';
@@ -47,6 +50,31 @@ class _HomePageState extends State<HomePage> {
 
   initSession() async {
     context.read<LanguageProvider>().initLanguage();
+    final gameProvider = context.read<GameProvider>();
+    final heartsProvider = context.read<HeartsProvider>();
+    final gemsProvider = context.read<GemsProvider>();
+
+    await gameProvider.ensureUserGameFields();
+    await gemsProvider.ensureGemsInitialized();
+    await heartsProvider.ensureHeartsInitialized();
+    await heartsProvider.refillHeart();
+    final streakResult = await gameProvider.checkStreakOnAppOpen();
+
+    if (!mounted) return;
+    if (streakResult == StreakCheckResult.broken) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Your streak was broken. Start again today.'),
+          backgroundColor: VarnamalaTheme.error,
+        ),
+      );
+    } else if (streakResult == StreakCheckResult.freezeConsumed) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Streak Freeze protected your streak.'),
+        ),
+      );
+    }
   }
 
   final List<PreferredSizeWidget> appBars = [

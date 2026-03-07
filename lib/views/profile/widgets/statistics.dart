@@ -19,6 +19,8 @@ class Statistics extends StatefulWidget {
 class _StatisticsState extends State<Statistics> {
   String streak = '0';
   String totalXp = '0';
+  String gems = '0';
+  String league = 'Bronze';
   bool isLoading = true;
   List<String> languages = [];
 
@@ -43,6 +45,8 @@ class _StatisticsState extends State<Statistics> {
         setState(() {
           streak = userData['streak']?.toString() ?? '0';
           totalXp = userData['score']?.toString() ?? '0';
+          gems = userData['gems']?.toString() ?? '0';
+          league = (userData['league'] as String? ?? 'bronze').toTitleCase;
           isLoading = false;
           languages = userData['languages']?.cast<String>() ?? [];
         });
@@ -113,14 +117,14 @@ class _StatisticsState extends State<Statistics> {
               _StatCard(
                 icon: Icons.shield_rounded,
                 iconColor: VarnamalaTheme.leagueAmethyst,
-                value: 'Pearl',
+                value: league,
                 label: 'Current League',
               ),
               _StatCard(
-                icon: Icons.emoji_events_rounded,
-                iconColor: VarnamalaTheme.leagueGold,
-                value: '7',
-                label: 'Top 3 Finishes',
+                icon: Icons.diamond_rounded,
+                iconColor: VarnamalaTheme.error,
+                value: gems,
+                label: 'Gems',
               ),
             ],
           ),

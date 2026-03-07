@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:chiclet/chiclet.dart';
+
+// Project imports:
 import 'package:words625/views/theme.dart';
 
 // Project imports:

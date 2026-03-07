@@ -1,6 +1,7 @@
-// Flutter imports:
+// Dart imports:
 import 'dart:async';
 
+// Flutter imports:
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
@@ -17,9 +18,9 @@ import 'package:words625/di/injection.dart';
 import 'package:words625/routing/routing.gr.dart';
 import 'package:words625/service/locator.dart';
 import 'package:words625/views/theme.dart';
+import 'web_wrapper.dart' as web;
 
 // Conditional import for web-only renderButton
-import 'web_wrapper.dart' as web;
 
 enum AuthState { loading, authenticated, unauthenticated }
 
@@ -190,6 +191,21 @@ class _GetStartedButtonState extends State<GetStartedButton> {
               'default_image_url', // You can replace 'default_image_url' with any placeholder
           'streak': 0,
           'score': 0,
+          'gems': 0,
+          'hearts': 5,
+          'heartsRefillAt': null,
+          'streakFreezes': 0,
+          'streakFreezeActive': false,
+          'league': 'bronze',
+          'leagueXp': 0,
+          'leagueJoinedAt': FieldValue.serverTimestamp(),
+          'achievements': <String>[],
+          'dailyXpGoal': 50,
+          'dailyXpEarned': 0,
+          'lastDailyReset': DateTime.now().toIso8601String(),
+          'lessonsCompleted': 0,
+          'perfectLessons': 0,
+          'streakWasBroken': false,
           'createdAt': FieldValue.serverTimestamp(),
           'updatedAt': FieldValue.serverTimestamp(),
         });

@@ -2,12 +2,13 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:injectable/injectable.dart';
 
 // Project imports:
+import 'package:words625/application/achievements_provider.dart';
 import 'package:words625/application/audio_controller.dart';
+import 'package:words625/application/game_provider.dart';
+import 'package:words625/application/gems_provider.dart';
 import 'package:words625/core/logger.dart';
 import 'package:words625/di/injection.dart';
 import 'package:words625/domain/course/course.dart';
@@ -31,8 +32,16 @@ extension AnswerStateX on AnswerState {
 @injectable
 class LessonProvider with ChangeNotifier {
   final AudioController _audioController;
+  final GameProvider _gameProvider;
+  final GemsProvider _gemsProvider;
+  final AchievementsProvider _achievementsProvider;
 
-  LessonProvider(this._audioController);
+  LessonProvider(
+    this._audioController,
+    this._gameProvider,
+    this._gemsProvider,
+    this._achievementsProvider,
+  );
 
   Course? _currentCourse;
   int _currentLevelIndex = 0;
@@ -42,6 +51,7 @@ class LessonProvider with ChangeNotifier {
   String? _selectedAnswer;
   double _percent = 0;
   AnswerState _answerState = AnswerState.none;
+  int _mistakesInCurrentLevel = 0;
 
   // Getters for the UI to use
   Course? get currentCourse => _currentCourse;
@@ -86,9 +96,12 @@ class LessonProvider with ChangeNotifier {
   bool checkAnswer() {
     if (selectedAnswer == currentQuestion?.correctAnswer) {
       _answerState = AnswerState.correct;
+      _isAnswerCorrect = true;
       _audioController.playRandomLevelUpSound();
     } else {
       _answerState = AnswerState.incorrect;
+      _isAnswerCorrect = false;
+      _mistakesInCurrentLevel += 1;
       _audioController.playRandomErrorSound();
     }
 
@@ -98,27 +111,25 @@ class LessonProvider with ChangeNotifier {
   }
 
   // Function to proceed to the next question or level
-  void next(BuildContext context) {
-    int currentLevelScore = 0;
+  Future<void> next(BuildContext context) async {
     if (_currentQuestionIndex < (currentLevel?.questions!.length)! - 1) {
-      currentLevelScore += 5;
-
       _currentQuestionIndex++;
     } else if (_currentLevelIndex < _currentCourse!.levels!.length - 1) {
       _currentLevelIndex++;
       _currentQuestionIndex = 0;
       _percent = 0;
-      currentLevelScore += 5;
 
       // show dialog to continue, or change stuff
       logger.w("You have completed the level");
-      incrementScore(currentLevelScore);
+      await _onLessonCompleted();
+      _mistakesInCurrentLevel = 0;
 
       // We store the game progress in local shared preferences
       getIt<AppPrefs>()
           .preferences
           .setInt(currentCourse!.courseName, _currentLevelIndex);
 
+      if (!context.mounted) return;
       showDialog(
         context: context,
         builder: (context) => const LevelPlayerChoice(),
@@ -127,7 +138,10 @@ class LessonProvider with ChangeNotifier {
       // Reached the end of the course
       _currentLevelIndex = 0;
       _currentQuestionIndex = 0;
+      await _onLessonCompleted();
+      _mistakesInCurrentLevel = 0;
 
+      if (!context.mounted) return;
       showDialog(
         context: context,
         builder: (context) => const CourseCompletionPlayerChoice(),
@@ -140,56 +154,26 @@ class LessonProvider with ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> incrementScore(int xp) async {
-    try {
-      final userId = FirebaseAuth.instance.currentUser?.uid;
-      if (userId == null) return;
+  Future<void> _onLessonCompleted() async {
+    final wasPerfect = _mistakesInCurrentLevel == 0;
 
-      final userDocRef =
-          FirebaseFirestore.instance.collection('users').doc(userId);
-      final userDoc = await userDocRef.get();
+    await _gameProvider.awardXP(XPEvent.lessonComplete);
+    await _gemsProvider.earnGems(GemEvent.lessonComplete);
 
-      if (!userDoc.exists) return;
-
-      final userData = userDoc.data()!;
-      final DateTime now = DateTime.now();
-
-      // Start of the current day (today's midnight)
-      final DateTime todayMidnight = DateTime(now.year, now.month, now.day);
-
-      // Get `lastStreakDate` from Firestore
-      final lastStreakDate = userData['lastStreakDate'] != null
-          ? DateTime.parse(userData['lastStreakDate'])
-          : null;
-
-      int newStreak = userData['streak'] ?? 1;
-
-      // Determine if streak should be incremented or reset
-      if (lastStreakDate != null) {
-        final DateTime lastMidnight = DateTime(
-            lastStreakDate.year, lastStreakDate.month, lastStreakDate.day);
-
-        // If the last streak date was before today and within the previous day
-        if (lastMidnight.isBefore(todayMidnight) &&
-            lastMidnight
-                .isAfter(todayMidnight.subtract(const Duration(days: 1)))) {
-          newStreak += 1; // Increment streak
-        } else if (lastMidnight != todayMidnight) {
-          newStreak = 1; // Reset streak if not consecutive day
-        }
-      } else {
-        newStreak = 1; // Initial streak if no lastStreakDate exists
-      }
-
-      // Update Firestore with new score and streak information
-      await userDocRef.update({
-        'score': FieldValue.increment(xp),
-        'streak': newStreak,
-        'lastStreakDate': todayMidnight.toIso8601String(),
-      });
-    } catch (e) {
-      logger.e("Error updating score and streak: $e");
+    if (wasPerfect) {
+      await _gameProvider.awardXP(XPEvent.perfectLesson);
+      await _gemsProvider.earnGems(GemEvent.perfectLesson);
     }
+
+    await _gameProvider.recordLessonCompletion(wasPerfect: wasPerfect);
+
+    final userData = await _gameProvider.getUserGameStateOnce();
+    final lessonsCompleted = (userData['lessonsCompleted'] as num? ?? 0).toInt();
+    final perfectLessons = (userData['perfectLessons'] as num? ?? 0).toInt();
+    await _achievementsProvider.checkLessonMilestones(
+      lessonsCompleted: lessonsCompleted,
+      perfectLessons: perfectLessons,
+    );
   }
 
   void changeAnswerState(AnswerState answerState) {

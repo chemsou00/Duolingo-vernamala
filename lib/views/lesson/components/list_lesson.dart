@@ -111,7 +111,7 @@ class _ListLessonState extends State<ListLesson> {
                         const SizedBox(height: 4),
                         Text(
                           "${lessonProvider.currentQuestion?.correctAnswer}",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 18,
                             color: VarnamalaTheme.error,
@@ -125,7 +125,7 @@ class _ListLessonState extends State<ListLesson> {
                           lessonProvider
                                   .currentQuestion?.translatedSentence ??
                               "",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontWeight: FontWeight.w500,
                             fontSize: 16,
                             color: VarnamalaTheme.peacockTeal,

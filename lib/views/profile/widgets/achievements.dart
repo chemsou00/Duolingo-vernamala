@@ -24,9 +24,9 @@ class Achievements extends StatelessWidget {
             ),
             child: Column(
               children: [
-                _AchievementTile(
+                const _AchievementTile(
                   icon: Icons.auto_stories_rounded,
-                  iconColor: const Color(0xFF42A5F5),
+                  iconColor: Color(0xFF42A5F5),
                   label: 'Scholar',
                   description: 'Learn 1,000 new words',
                   current: 34,
@@ -34,9 +34,9 @@ class Achievements extends StatelessWidget {
                   level: 9,
                 ),
                 const Divider(height: 1, indent: 16, endIndent: 16),
-                _AchievementTile(
+                const _AchievementTile(
                   icon: Icons.psychology_rounded,
-                  iconColor: const Color(0xFF66BB6A),
+                  iconColor: Color(0xFF66BB6A),
                   label: 'Sage',
                   description: 'Learn 1,000 new words in a single course',
                   current: 50,
@@ -44,9 +44,9 @@ class Achievements extends StatelessWidget {
                   level: 1,
                 ),
                 const Divider(height: 1, indent: 16, endIndent: 16),
-                _AchievementTile(
+                const _AchievementTile(
                   icon: Icons.workspace_premium_rounded,
-                  iconColor: const Color(0xFFAB47BC),
+                  iconColor: Color(0xFFAB47BC),
                   label: 'Champion',
                   description: 'Complete 200 lessons',
                   current: 150,
@@ -193,7 +193,7 @@ class _AchievementTile extends StatelessWidget {
                           value: current / target,
                           minHeight: 8,
                           backgroundColor: const Color(0xFFEEF2F1),
-                          valueColor: AlwaysStoppedAnimation<Color>(
+                          valueColor: const AlwaysStoppedAnimation<Color>(
                               VarnamalaTheme.success),
                         ),
                       ),

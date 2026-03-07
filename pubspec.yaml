@@ -1,18 +1,18 @@
 name: words625
-version: '1.0.0+1'
+version: 1.0.0+1
 publish_to: none
-environment: 
-  sdk: '>=3.2.3 <4.0.0'
+environment:
+  sdk: ">=3.2.3 <4.0.0"
 description: Varnamala - A Duolingo Alternative for Learning Indian Languages
-dependencies: 
-  animated_text_kit: '^4.2.2'
+dependencies:
+  animated_text_kit: ^4.2.2
   audioplayers: any
   auto_route: 9.2.2
   chiclet: any
   cloud_firestore: any
-  contained_tab_bar_view: '^0.8.0'
+  contained_tab_bar_view: ^0.8.0
   countup: any
-  cupertino_icons: '^1.0.2'
+  cupertino_icons: ^1.0.2
   equatable: any
   firebase_analytics: any
   firebase_auth: any
@@ -20,10 +20,10 @@ dependencies:
   firebase_crashlytics: any
   firebase_messaging: any
   firebase_storage: any
-  flutter: 
+  flutter:
     sdk: flutter
   flutter_animate: any
-  flutter_custom_dialog: '^1.2.0'
+  flutter_custom_dialog: ^1.2.0
   flutter_svg: any
   flutter_tts: any
   font_awesome_flutter: any
@@ -35,7 +35,7 @@ dependencies:
   json_annotation: any
   json_serializable: any
   logger: any
-  percent_indicator: '^4.0.0'
+  percent_indicator: ^4.0.0
   provider: any
   pulsator: any
   shimmer: any
@@ -46,36 +46,36 @@ dev_dependencies:
   flutter_animate: any
   flutter_gen: 5.8.0
   flutter_gen_runner: 5.8.0
-  flutter_lints: '^2.0.0'
-  flutter_test: 
+  flutter_launcher_icons: any
+  flutter_lints: ^2.0.0
+  flutter_test:
     sdk: flutter
   import_sorter: any
   injectable_generator: any
   pubspec_dependency_sorter: any
-  string_extension:
-  flutter_launcher_icons:
-flutter: 
+  string_extension: any
+flutter:
   uses-material-design: true
-  assets: 
+  assets:
     - assets/sounds/
     - assets/icons/
     - assets/images/
     - assets/images/mala/
     - assets/screens/
 flutter_launcher_icons:
-  android: "launcher_icon"
+  android: launcher_icon
   ios: true
-  image_path: "assets/images/app_logo.png"
+  image_path: assets/images/app_logo.png
   min_sdk_android: 21
   web:
     generate: true
-    image_path: "assets/images/app_logo.png"
+    image_path: assets/images/app_logo.png
     background_color: "#hexcode"
     theme_color: "#hexcode"
   windows:
     generate: true
-    image_path: "assets/images/app_logo.png"
-    icon_size: 48 # min:48, max:256, default: 48
+    image_path: assets/images/app_logo.png
+    icon_size: 48
   macos:
     generate: true
-    image_path: "assets/images/app_logo.png"
+    image_path: assets/images/app_logo.png

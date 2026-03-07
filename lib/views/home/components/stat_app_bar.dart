@@ -14,6 +14,8 @@ import 'package:words625/gen/assets.gen.dart';
 import 'package:words625/routing/routing.gr.dart';
 import 'package:words625/service/locator.dart';
 import 'package:words625/views/theme.dart';
+import 'package:words625/views/widgets/gems_display.dart';
+import 'package:words625/views/widgets/hearts_display.dart';
 import 'package:words625/views/widgets/loader.dart';
 
 class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
@@ -33,10 +35,12 @@ class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
           ScoreCard(),
           Padding(padding: EdgeInsets.all(12)),
           Streak(),
+          Padding(padding: EdgeInsets.all(6)),
+          GemsDisplay(),
         ],
       ),
       actions: const [
-        InfinityHeart(),
+        HeartsDisplay(),
       ],
     );
   }
@@ -126,35 +130,6 @@ class ScoreCard extends StatelessWidget {
             },
           ),
         ],
-      ),
-    );
-  }
-}
-
-class InfinityHeart extends StatelessWidget {
-  const InfinityHeart({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Tooltip(
-      message: 'Infinite Hearts',
-      triggerMode: TooltipTriggerMode.tap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 12),
-        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-        decoration: BoxDecoration(
-          color: const Color(0xFFFFEBEE),
-          borderRadius: BorderRadius.circular(VarnamalaTheme.radiusRound),
-        ),
-        child: const Row(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(Icons.favorite_rounded, color: Color(0xFFE53935), size: 20),
-            SizedBox(width: 2),
-            Icon(Icons.all_inclusive_rounded,
-                color: Color(0xFFE53935), size: 16),
-          ],
-        ),
       ),
     );
   }

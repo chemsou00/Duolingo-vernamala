@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:auto_route/auto_route.dart';
+import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:words625/application/game_provider.dart';
+import 'package:words625/application/gems_provider.dart';
+import 'package:words625/application/hearts_provider.dart';
 import 'package:words625/routing/routing.gr.dart';
 import 'package:words625/views/auth/components/logout_button.dart';
 import 'package:words625/views/theme.dart';
@@ -14,114 +18,166 @@ class ShopPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CustomScrollView(
-      physics: const BouncingScrollPhysics(),
-      slivers: [
-        const SliverToBoxAdapter(child: SizedBox(height: 8)),
-        // Streak section
-        SliverToBoxAdapter(
-          child: _SectionTitle(title: 'Streak', icon: Icons.local_fire_department_rounded, iconColor: const Color(0xFFFF9500)),
-        ),
-        SliverToBoxAdapter(
-          child: ShopItem(
-            icon: Icons.ac_unit_rounded,
-            iconColor: const Color(0xFF42A5F5),
-            label: 'Streak Freeze',
-            description:
-                'Protect your streak if you miss a day of practice. Equip up to 2 at once.',
-            current: 2,
-            total: 2,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-            child: Material(
-              color: VarnamalaTheme.peacockTeal,
-              borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
-              child: InkWell(
-                borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
-                onTap: () {
-                  context.router.push(const MatchWordsRoute());
-                },
-                child: Container(
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  child: const Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
-                      SizedBox(width: 8),
-                      Text(
-                        'Try Match Madness',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                          color: Colors.white,
-                        ),
+    return StreamBuilder<Map<String, dynamic>>(
+      stream: context.read<GameProvider>().getUserGameStateStream(),
+      builder: (context, snapshot) {
+        final gameState = snapshot.data ?? const <String, dynamic>{};
+        final streakFreezes = (gameState['streakFreezes'] as num? ?? 0).toInt();
+
+        return CustomScrollView(
+          physics: const BouncingScrollPhysics(),
+          slivers: [
+            const SliverToBoxAdapter(child: SizedBox(height: 8)),
+            const SliverToBoxAdapter(
+              child: _SectionTitle(
+                title: 'Streak',
+                icon: Icons.local_fire_department_rounded,
+                iconColor: Color(0xFFFF9500),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.ac_unit_rounded,
+                iconColor: const Color(0xFF42A5F5),
+                label: 'Streak Freeze',
+                description: 'Protect your streak for one missed day. Max 2 owned.',
+                price: GemPurchase.streakFreeze.cost,
+                current: streakFreezes,
+                total: 2,
+                buttonLabel: streakFreezes >= 2 ? 'MAXED' : 'BUY',
+                enabled: streakFreezes < 2,
+                onTap: () => _handlePurchase(context, GemPurchase.streakFreeze),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                child: Material(
+                  color: VarnamalaTheme.peacockTeal,
+                  borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
+                    onTap: () => context.router.push(const MatchWordsRoute()),
+                    child: const Padding(
+                      padding: EdgeInsets.symmetric(vertical: 14),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.bolt_rounded, color: Colors.white, size: 22),
+                          SizedBox(width: 8),
+                          Text(
+                            'Try Match Madness',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
             ),
-          ),
+            const SliverToBoxAdapter(
+              child: _SectionTitle(
+                title: 'Power-Ups',
+                icon: Icons.bolt_rounded,
+                iconColor: VarnamalaTheme.warning,
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.favorite_rounded,
+                iconColor: const Color(0xFFE53935),
+                label: 'Heart Refill',
+                description: 'Refill to 5 hearts instantly.',
+                price: GemPurchase.heartRefill.cost,
+                buttonLabel: 'REFILL',
+                onTap: () => _handlePurchase(context, GemPurchase.heartRefill),
+              ),
+            ),
+            SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.flash_on_rounded,
+                iconColor: const Color(0xFF66BB6A),
+                label: 'Double XP',
+                description: 'Earn double XP for the next 30 minutes.',
+                price: GemPurchase.doubleXp.cost,
+                buttonLabel: 'ACTIVATE',
+                onTap: () => _handlePurchase(context, GemPurchase.doubleXp),
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: _SectionTitle(
+                title: 'Outfits',
+                icon: Icons.checkroom_rounded,
+                iconColor: VarnamalaTheme.leagueAmethyst,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.workspace_premium_rounded,
+                iconColor: Color(0xFF5C6BC0),
+                label: 'Formal Attire',
+                description: "Learn in style. Mala has always been sharp.",
+                price: 1000,
+                buttonLabel: 'COMING SOON',
+                enabled: false,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.diamond_rounded,
+                iconColor: Color(0xFFAB47BC),
+                label: 'Luxury Tracksuit',
+                description: 'Mala will love the luxury feathers.',
+                price: 2000,
+                buttonLabel: 'COMING SOON',
+                enabled: false,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: ShopItem(
+                icon: Icons.auto_awesome_rounded,
+                iconColor: Color(0xFFEF5350),
+                label: 'Super Mala',
+                description: 'Turn Mala into a fearless feathered Guru.',
+                price: 3000,
+                buttonLabel: 'COMING SOON',
+                enabled: false,
+              ),
+            ),
+            const SliverToBoxAdapter(
+              child: Padding(
+                padding: EdgeInsets.all(16.0),
+                child: LogoutButton(),
+              ),
+            ),
+            const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _handlePurchase(BuildContext context, GemPurchase purchase) async {
+    final success = await context.read<GemsProvider>().spendGems(purchase);
+    if (!context.mounted) return;
+
+    if (success && purchase == GemPurchase.heartRefill) {
+      await context.read<HeartsProvider>().refillHeart();
+      if (!context.mounted) return;
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          success ? 'Purchase successful.' : 'Not enough gems or limit reached.',
         ),
-        // Power-ups section
-        SliverToBoxAdapter(
-          child: _SectionTitle(title: 'Power-Ups', icon: Icons.bolt_rounded, iconColor: VarnamalaTheme.warning),
-        ),
-        SliverToBoxAdapter(
-          child: ShopItem(
-            icon: Icons.calendar_month_rounded,
-            iconColor: const Color(0xFF66BB6A),
-            label: 'Double or Nothing',
-            description:
-                'Attempt to double your five lingot wager by maintaining a seven-day streak.',
-            price: 450,
-          ),
-        ),
-        // Outfits section
-        SliverToBoxAdapter(
-          child: _SectionTitle(title: 'Outfits', icon: Icons.checkroom_rounded, iconColor: VarnamalaTheme.leagueAmethyst),
-        ),
-        SliverToBoxAdapter(
-          child: ShopItem(
-            icon: Icons.workspace_premium_rounded,
-            iconColor: const Color(0xFF5C6BC0),
-            label: 'Formal Attire',
-            description:
-                "Learn in style. Mala has always been sharp, now she'll look sharp too.",
-            price: 1000,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: ShopItem(
-            icon: Icons.diamond_rounded,
-            iconColor: const Color(0xFFAB47BC),
-            label: 'Luxury Tracksuit',
-            description:
-                'Learn in luxury. Mala will love the feel of 24-carat gold silk on her feathers.',
-            price: 2000,
-          ),
-        ),
-        SliverToBoxAdapter(
-          child: ShopItem(
-            icon: Icons.flash_on_rounded,
-            iconColor: const Color(0xFFEF5350),
-            label: 'Super Mala',
-            description:
-                'Transform Mala from a cute peacock into a fearless feathered Guru.',
-            price: 3000,
-          ),
-        ),
-        const SliverToBoxAdapter(
-          child: Padding(
-            padding: EdgeInsets.all(16.0),
-            child: LogoutButton(),
-          ),
-        ),
-        const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
-      ],
+        backgroundColor: success ? VarnamalaTheme.peacockTeal : VarnamalaTheme.error,
+      ),
     );
   }
 }
@@ -165,6 +221,9 @@ class ShopItem extends StatelessWidget {
   final int? price;
   final int? current;
   final int? total;
+  final String? buttonLabel;
+  final VoidCallback? onTap;
+  final bool enabled;
 
   const ShopItem({
     Key? key,
@@ -175,6 +234,9 @@ class ShopItem extends StatelessWidget {
     this.price,
     this.current,
     this.total,
+    this.buttonLabel,
+    this.onTap,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -227,9 +289,35 @@ class ShopItem extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
-                price != null
-                    ? _PriceTag(price: price!)
-                    : _EquippedTag(current: current!, total: total!),
+                Row(
+                  children: [
+                    if (price != null) _PriceTag(price: price!),
+                    if (current != null && total != null)
+                      _EquippedTag(current: current!, total: total!),
+                    const Spacer(),
+                    if (buttonLabel != null)
+                      SizedBox(
+                        height: 32,
+                        child: ElevatedButton(
+                          onPressed: enabled ? onTap : null,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: enabled
+                                ? VarnamalaTheme.peacockTeal
+                                : VarnamalaTheme.textHint,
+                            padding: const EdgeInsets.symmetric(horizontal: 12),
+                          ),
+                          child: Text(
+                            buttonLabel!,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -284,7 +372,7 @@ class _EquippedTag extends StatelessWidget {
         borderRadius: BorderRadius.circular(VarnamalaTheme.radiusRound),
       ),
       child: Text(
-        '$current / $total EQUIPPED',
+        '$current / $total OWNED',
         style: const TextStyle(
           color: VarnamalaTheme.peacockTeal,
           fontWeight: FontWeight.w700,

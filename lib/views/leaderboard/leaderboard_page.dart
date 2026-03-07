@@ -2,90 +2,96 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 // Project imports:
+import 'package:words625/application/league_provider.dart';
 import 'package:words625/core/extensions.dart';
+import 'package:words625/domain/league.dart';
 import 'package:words625/views/theme.dart';
 
-class LeaderboardPage extends StatelessWidget {
+class LeaderboardPage extends StatefulWidget {
   const LeaderboardPage({Key? key}) : super(key: key);
 
   @override
+  State<LeaderboardPage> createState() => _LeaderboardPageState();
+}
+
+class _LeaderboardPageState extends State<LeaderboardPage>
+    with SingleTickerProviderStateMixin {
+  late final TabController _tabController;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabController = TabController(length: LeagueProvider.leagues.length, vsync: this);
+  }
+
+  @override
+  void dispose() {
+    _tabController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance
-          .collection('users')
-          .orderBy('score', descending: true)
-          .limit(30)
-          .snapshots(),
+    return Column(
+      children: [
+        const SizedBox(height: 12),
+        _LeagueHeader(controller: _tabController),
+        Expanded(
+          child: TabBarView(
+            controller: _tabController,
+            children: LeagueProvider.leagues
+                .map((league) => _LeagueLeaderboardList(league: league))
+                .toList(growable: false),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _LeagueLeaderboardList extends StatelessWidget {
+  final String league;
+
+  const _LeagueLeaderboardList({required this.league});
+
+  @override
+  Widget build(BuildContext context) {
+    return StreamBuilder<List<LeaderboardEntry>>(
+      stream: context.read<LeagueProvider>().getLeagueLeaderboard(league),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
-          return Center(
+          return const Center(
             child: CircularProgressIndicator(
               color: VarnamalaTheme.peacockTeal,
               strokeWidth: 3,
             ),
           );
         }
-        if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+
+        final users = snapshot.data ?? const <LeaderboardEntry>[];
+        if (users.isEmpty) {
           return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.leaderboard_rounded,
-                    size: 64,
-                    color: VarnamalaTheme.textHint.withValues(alpha: 0.3)),
-                const SizedBox(height: 16),
-                Text(
-                  'No leaderboard data yet',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: VarnamalaTheme.textHint,
-                      ),
-                ),
-              ],
+            child: Text(
+              'No users in ${league.toTitleCase} yet',
+              style: Theme.of(context)
+                  .textTheme
+                  .bodyLarge
+                  ?.copyWith(color: VarnamalaTheme.textHint),
             ),
           );
         }
 
-        final users = snapshot.data!.docs;
-
-        return CustomScrollView(
+        return ListView.builder(
           physics: const BouncingScrollPhysics(),
-          slivers: [
-            // League header card
-            SliverToBoxAdapter(
-              child: _LeagueHeader(),
-            ),
-            // Leaderboard list
-            SliverPadding(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) {
-                    final userData =
-                        users[index].data() as Map<String, dynamic>;
-                    final xp = userData['score'] ?? 0;
-                    final name = userData['name'] ?? 'Anonymous';
-                    final image = userData['profileImage'] ??
-                        'assets/images/default_image.png';
-                    final languages =
-                        userData['languages'] as List<dynamic>? ?? [];
-
-                    return _LeaderboardTile(
-                      rank: index + 1,
-                      name: name,
-                      image: image,
-                      xp: xp,
-                      languages: languages.cast<String>(),
-                    );
-                  },
-                  childCount: users.length,
-                ),
-              ),
-            ),
-            const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
-          ],
+          padding: const EdgeInsets.fromLTRB(16, 6, 16, 24),
+          itemCount: users.length,
+          itemBuilder: (context, index) {
+            final user = users[index];
+            return _LeaderboardTile(rank: index + 1, user: user);
+          },
         );
       },
     );
@@ -93,11 +99,15 @@ class LeaderboardPage extends StatelessWidget {
 }
 
 class _LeagueHeader extends StatelessWidget {
+  final TabController controller;
+
+  const _LeagueHeader({required this.controller});
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      padding: const EdgeInsets.all(20),
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.fromLTRB(14, 12, 14, 10),
       decoration: BoxDecoration(
         gradient: const LinearGradient(
           begin: Alignment.topLeft,
@@ -107,31 +117,41 @@ class _LeagueHeader extends StatelessWidget {
         borderRadius: BorderRadius.circular(VarnamalaTheme.radiusXLarge),
         boxShadow: [
           BoxShadow(
-            color: VarnamalaTheme.leagueAmethyst.withValues(alpha: 0.3),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
+            color: VarnamalaTheme.leagueAmethyst.withValues(alpha: 0.25),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Column(
         children: [
-          const Icon(Icons.shield_rounded, color: Colors.white, size: 40),
-          const SizedBox(height: 8),
-          const Text(
-            'Amethyst League',
-            style: TextStyle(
-              fontSize: 22,
-              fontWeight: FontWeight.w700,
-              color: Colors.white,
-            ),
+          const Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.shield_rounded, color: Colors.white, size: 24),
+              SizedBox(width: 8),
+              Text(
+                'Weekly League XP',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 17,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 6),
-          Text(
-            'Top 10 advance to the next league',
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.white.withValues(alpha: 0.8),
-            ),
+          const SizedBox(height: 10),
+          TabBar(
+            controller: controller,
+            isScrollable: true,
+            labelColor: Colors.white,
+            unselectedLabelColor: Colors.white.withValues(alpha: 0.75),
+            indicatorColor: Colors.white,
+            dividerColor: Colors.transparent,
+            labelStyle: const TextStyle(fontWeight: FontWeight.w700),
+            tabs: LeagueProvider.leagues
+                .map((league) => Tab(text: league.toTitleCase))
+                .toList(growable: false),
           ),
         ],
       ),
@@ -141,94 +161,92 @@ class _LeagueHeader extends StatelessWidget {
 
 class _LeaderboardTile extends StatelessWidget {
   final int rank;
-  final String name;
-  final String image;
-  final int xp;
-  final List<String> languages;
+  final LeaderboardEntry user;
 
-  const _LeaderboardTile({
-    required this.rank,
-    required this.name,
-    required this.image,
-    required this.xp,
-    required this.languages,
-  });
+  const _LeaderboardTile({required this.rank, required this.user});
 
   @override
   Widget build(BuildContext context) {
-    final isTopThree = rank <= 3;
-    final rankColors = {
-      1: const Color(0xFFFFD700),
-      2: const Color(0xFFC0C0C0),
-      3: const Color(0xFFCD7F32),
-    };
+    final isTopTen = rank <= 10;
+    final isBottomFive = rank > 25;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isTopThree
-            ? rankColors[rank]!.withValues(alpha: 0.06)
-            : Colors.white,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
         border: Border.all(
-          color: isTopThree
-              ? rankColors[rank]!.withValues(alpha: 0.2)
-              : const Color(0xFFEEF2F1),
+          color: isTopTen
+              ? VarnamalaTheme.success.withValues(alpha: 0.45)
+              : isBottomFive
+                  ? VarnamalaTheme.error.withValues(alpha: 0.28)
+                  : const Color(0xFFEEF2F1),
         ),
       ),
       child: Row(
         children: [
-          // Rank
           SizedBox(
-            width: 32,
-            child: isTopThree
-                ? Icon(
-                    Icons.emoji_events_rounded,
-                    color: rankColors[rank],
-                    size: 24,
-                  )
-                : Text(
-                    '$rank',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.w700,
-                      color: VarnamalaTheme.textHint,
-                    ),
-                  ),
+            width: 34,
+            child: Text(
+              '$rank',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w700,
+                color: isTopTen
+                    ? VarnamalaTheme.successDark
+                    : isBottomFive
+                        ? VarnamalaTheme.error
+                        : VarnamalaTheme.textHint,
+              ),
+            ),
           ),
-          const SizedBox(width: 12),
-          // Avatar
+          const SizedBox(width: 10),
           CircleAvatar(
-            backgroundImage: NetworkImage(image),
-            radius: 20,
+            radius: 19,
             backgroundColor: VarnamalaTheme.peacockTeal.withValues(alpha: 0.1),
+            backgroundImage:
+                user.profileImage.isEmpty ? null : NetworkImage(user.profileImage),
+            child: user.profileImage.isEmpty
+                ? const Icon(Icons.person_rounded, color: VarnamalaTheme.peacockTeal)
+                : null,
           ),
           const SizedBox(width: 12),
-          // Name & languages
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  name,
-                  style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w600,
+                Row(
+                  children: [
+                    Flexible(
+                      child: Text(
+                        user.name,
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
+                        overflow: TextOverflow.ellipsis,
                       ),
+                    ),
+                    const SizedBox(width: 6),
+                    const Icon(
+                      Icons.shield_rounded,
+                      size: 14,
+                      color: VarnamalaTheme.leagueAmethyst,
+                    ),
+                  ],
                 ),
-                if (languages.isNotEmpty)
+                if (user.languages.isNotEmpty)
                   Text(
-                    languages.join(', ').toTitleCase,
+                    user.languages.join(', ').toTitleCase,
                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: VarnamalaTheme.peacockTeal,
-                          fontWeight: FontWeight.w500,
                         ),
+                    overflow: TextOverflow.ellipsis,
                   ),
               ],
             ),
           ),
-          // XP
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
@@ -236,7 +254,7 @@ class _LeaderboardTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(VarnamalaTheme.radiusRound),
             ),
             child: Text(
-              '$xp XP',
+              '${user.leagueXp} XP',
               style: const TextStyle(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,

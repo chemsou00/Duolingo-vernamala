@@ -16,60 +16,58 @@ class BottomNavigator extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.08),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(
-          8,
-          8,
-          8,
-          8 + MediaQuery.of(context).padding.bottom,
+    final bottomPadding = MediaQuery.of(context).padding.bottom;
+    return SizedBox(
+      height: 64 + bottomPadding,
+      child: Container(
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.08),
+              blurRadius: 20,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
+        padding: EdgeInsets.only(bottom: bottomPadding),
         child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              _NavItem(
-                icon: Icons.school_rounded,
-                label: 'Learn',
-                isSelected: currentIndex == 0,
-                onTap: () => onPress(0),
-              ),
-              _NavItem(
-                icon: Icons.translate_rounded,
-                label: 'Script',
-                isSelected: currentIndex == 1,
-                onTap: () => onPress(1),
-              ),
-              _NavItem(
-                icon: Icons.person_rounded,
-                label: 'Profile',
-                isSelected: currentIndex == 2,
-                onTap: () => onPress(2),
-              ),
-              _NavItem(
-                icon: Icons.emoji_events_rounded,
-                label: 'Leagues',
-                isSelected: currentIndex == 3,
-                onTap: () => onPress(3),
-              ),
-              _NavItem(
-                icon: Icons.storefront_rounded,
-                label: 'Shop',
-                isSelected: currentIndex == 4,
-                onTap: () => onPress(4),
-              ),
-            ],
-          ),
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _NavItem(
+              icon: Icons.school_rounded,
+              label: 'Learn',
+              isSelected: currentIndex == 0,
+              onTap: () => onPress(0),
+            ),
+            _NavItem(
+              icon: Icons.translate_rounded,
+              label: 'Script',
+              isSelected: currentIndex == 1,
+              onTap: () => onPress(1),
+            ),
+            _NavItem(
+              icon: Icons.person_rounded,
+              label: 'Profile',
+              isSelected: currentIndex == 2,
+              onTap: () => onPress(2),
+            ),
+            _NavItem(
+              icon: Icons.emoji_events_rounded,
+              label: 'Leagues',
+              isSelected: currentIndex == 3,
+              onTap: () => onPress(3),
+            ),
+            _NavItem(
+              icon: Icons.storefront_rounded,
+              label: 'Shop',
+              isSelected: currentIndex == 4,
+              onTap: () => onPress(4),
+            ),
+          ],
         ),
+      ),
     );
   }
 }

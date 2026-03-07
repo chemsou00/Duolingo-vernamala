@@ -21,16 +21,22 @@ class _MalaWelcomesState extends State<MalaWelcomes> {
     Assets.images.mala.malaLusty.path
   ];
   int _currentIndex = 0;
+  Timer? _timer;
 
   @override
   void initState() {
     super.initState();
-    // Start the automatic transition
-    Timer.periodic(const Duration(seconds: 3), (timer) {
+    _timer = Timer.periodic(const Duration(seconds: 3), (timer) {
       setState(() {
         _currentIndex = (_currentIndex + 1) % images.length;
       });
     });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
   }
 
   @override

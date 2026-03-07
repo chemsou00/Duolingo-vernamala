@@ -12,7 +12,6 @@ import 'package:words625/core/logger.dart';
 import 'package:words625/domain/course/course.dart';
 import 'package:words625/views/lesson/components/lesson_app_bar.dart';
 import 'package:words625/views/lesson/components/list_lesson.dart';
-import 'package:words625/views/theme.dart';
 
 enum LessonAvailability { loading, present, absent }
 
@@ -109,40 +108,41 @@ class CheckButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8.0),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 16),
       child: Consumer<LessonProvider>(
         builder: (context, lessonState, child) {
-          String? title;
-          Color? backgroundColor;
+          String title;
+          Color backgroundColor;
 
           if (lessonState.answerState == AnswerState.correct ||
               lessonState.answerState == AnswerState.readyForNext) {
-            title = "NEXT";
-            backgroundColor = Colors.orangeAccent;
+            title = "CONTINUE";
+            backgroundColor = const Color(0xFF58A700);
           } else if (lessonState.answerState == AnswerState.incorrect) {
-            title = "TRY AGAIN";
-            backgroundColor = Colors.red;
+            title = "GOT IT";
+            backgroundColor = const Color(0xFFE53935);
           } else {
             title = "CHECK";
-            backgroundColor = primaryColor;
+            backgroundColor = const Color(0xFF1F727E);
           }
 
+          final isEnabled = lessonState.selectedAnswer != null;
+
           return ChicletAnimatedButton(
-            width: MediaQuery.of(context).size.width * 0.9,
-            backgroundColor: backgroundColor,
-            onPressed: lessonState.selectedAnswer != null
+            width: MediaQuery.of(context).size.width - 40,
+            backgroundColor: isEnabled 
+                ? backgroundColor 
+                : const Color(0xFFE5E7EB),
+            onPressed: isEnabled
                 ? () {
                     if (lessonState.answerState != AnswerState.readyForNext) {
                       final checkAnswer = lessonState.checkAnswer();
                       logger.w("Check Answer: $checkAnswer");
                       if (checkAnswer) {
-                        // lessonState.next();
                         if (lessonState.answerState == AnswerState.correct) {
-                          // play uplifting sound
                           lessonState
                               .changeAnswerState(AnswerState.readyForNext);
                         }
-                        // play some error sound or show the correct answer
                       }
                     } else if (lessonState.answerState ==
                         AnswerState.readyForNext) {
@@ -152,11 +152,13 @@ class CheckButton extends StatelessWidget {
                 : null,
             child: Text(
               title,
-              style: const TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.w700,
+                color: isEnabled ? Colors.white : const Color(0xFF9CA3AF),
+                letterSpacing: 0.5,
               ),
-            ), // Button disabled until an answer is selected
+            ),
           );
         },
       ),
@@ -167,52 +169,77 @@ class CheckButton extends StatelessWidget {
 class LevelPlayerChoice extends StatelessWidget {
   const LevelPlayerChoice({super.key});
 
+  static const _primaryColor = Color(0xFF1F727E);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const Text(
-                "Congratulations 💫",
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: const Color(0xFFF0FDF4),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.celebration_rounded,
+                color: Color(0xFF16A34A),
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Level Complete!",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "Great job on finishing this level.",
+              style: TextStyle(
+                fontSize: 15,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+            const SizedBox(height: 28),
+            ChicletAnimatedButton(
+              width: MediaQuery.of(context).size.width * 0.55,
+              backgroundColor: _primaryColor,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Continue",
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                 ),
               ),
-              const Text("You have completed this level!",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )),
-              Column(
-                children: [
-                  ChicletAnimatedButton(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    backgroundColor: primaryColor,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Continue"),
-                  ),
-                  const SizedBox(height: 12),
-                  ChicletOutlinedAnimatedButton(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    backgroundColor: Colors.white,
-                    borderColor: primaryColor,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Go Back"),
-                  ),
-                ],
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Back to Courses",
+                style: TextStyle(
+                  color: Color(0xFF6B7280),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ]),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -221,52 +248,77 @@ class LevelPlayerChoice extends StatelessWidget {
 class CourseCompletionPlayerChoice extends StatelessWidget {
   const CourseCompletionPlayerChoice({super.key});
 
+  static const _primaryColor = Color(0xFF1F727E);
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      child: SizedBox(
-        height: MediaQuery.of(context).size.height * 0.4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
         child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              const Text(
-                "Congratulations 💫",
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              padding: const EdgeInsets.all(16),
+              decoration: const BoxDecoration(
+                color: Color(0xFFFEF3C7),
+                shape: BoxShape.circle,
+              ),
+              child: const Icon(
+                Icons.emoji_events_rounded,
+                color: Color(0xFFD97706),
+                size: 40,
+              ),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Course Complete!",
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.w700,
+                color: Color(0xFF1A1A1A),
+              ),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+              "You've mastered all the lessons.",
+              style: TextStyle(
+                fontSize: 15,
+                color: Color(0xFF6B7280),
+              ),
+            ),
+            const SizedBox(height: 28),
+            ChicletAnimatedButton(
+              width: MediaQuery.of(context).size.width * 0.55,
+              backgroundColor: _primaryColor,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Practice Again",
                 style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
-                  color: primaryColor,
+                  fontWeight: FontWeight.w600,
+                  fontSize: 16,
                 ),
               ),
-              const Text("You have completed this course!",
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  )),
-              Column(
-                children: [
-                  ChicletAnimatedButton(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    backgroundColor: primaryColor,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Repeat"),
-                  ),
-                  const SizedBox(height: 12),
-                  ChicletOutlinedAnimatedButton(
-                    width: MediaQuery.of(context).size.width * 0.5,
-                    backgroundColor: Colors.white,
-                    borderColor: primaryColor,
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("Go Back"),
-                  ),
-                ],
+            ),
+            const SizedBox(height: 12),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                Navigator.of(context).pop();
+              },
+              child: const Text(
+                "Back to Courses",
+                style: TextStyle(
+                  color: Color(0xFF6B7280),
+                  fontWeight: FontWeight.w500,
+                ),
               ),
-            ]),
+            ),
+          ],
+        ),
       ),
     );
   }

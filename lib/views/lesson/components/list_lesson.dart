@@ -53,58 +53,82 @@ class _ListLessonState extends State<ListLesson> {
               Align(
                 alignment: Alignment.bottomCenter,
                 child: Container(
-                  height: MediaQuery.of(context).size.height * 0.20,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                    vertical: 16,
-                  ),
+                  padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
                   width: double.infinity,
                   decoration: BoxDecoration(
                     color: lessonProvider.answerState.isCorrect
-                        ? Colors.lightGreenAccent.shade200
-                        : Colors.red.shade200,
+                        ? const Color(0xFFE8F5E9)
+                        : const Color(0xFFFFEBEE),
                     borderRadius: const BorderRadius.only(
-                        topLeft: Radius.circular(12),
-                        topRight: Radius.circular(12)),
+                        topLeft: Radius.circular(16),
+                        topRight: Radius.circular(16)),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.08),
+                        blurRadius: 20,
+                        offset: const Offset(0, -4),
+                      ),
+                    ],
                   ),
                   child: Column(
+                    mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        lessonProvider.answerState.isCorrect
-                            ? "Correct Answer!"
-                            : "Incorrect Answer!",
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: lessonProvider.answerState.isCorrect
-                              ? Colors.green
-                              : Colors.white,
-                        ),
+                      Row(
+                        children: [
+                          Icon(
+                            lessonProvider.answerState.isCorrect
+                                ? Icons.check_circle_rounded
+                                : Icons.cancel_rounded,
+                            color: lessonProvider.answerState.isCorrect
+                                ? const Color(0xFF2E7D32)
+                                : const Color(0xFFC62828),
+                            size: 28,
+                          ),
+                          const SizedBox(width: 10),
+                          Text(
+                            lessonProvider.answerState.isCorrect
+                                ? "Correct!"
+                                : "Incorrect",
+                            style: TextStyle(
+                              fontWeight: FontWeight.w700,
+                              fontSize: 20,
+                              color: lessonProvider.answerState.isCorrect
+                                  ? const Color(0xFF2E7D32)
+                                  : const Color(0xFFC62828),
+                            ),
+                          ),
+                        ],
                       ),
                       if (lessonProvider.answerState.isIncorrect) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
+                        Text(
+                          "Correct answer:",
+                          style: TextStyle(
+                            fontSize: 14,
+                            color: Colors.grey.shade600,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
                         Text(
                           "${lessonProvider.currentQuestion?.correctAnswer}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 22,
-                            color: lessonProvider.answerState.isCorrect
-                                ? Colors.black
-                                : Colors.white,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18,
+                            color: Color(0xFFC62828),
                           ),
                         ),
                       ] else if (lessonProvider
                               .currentQuestion?.translatedSentence !=
                           null) ...[
-                        const SizedBox(height: 8),
+                        const SizedBox(height: 12),
                         Text(
-                          "Translation: ${lessonProvider.currentQuestion?.translatedSentence}",
+                          lessonProvider.currentQuestion?.translatedSentence ?? "",
                           style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 22,
-                              color: Colors.green),
+                            fontWeight: FontWeight.w500,
+                            fontSize: 16,
+                            color: Color(0xFF388E3C),
+                          ),
                         ),
                       ],
                     ],
@@ -160,13 +184,15 @@ class Instruction extends StatelessWidget {
     return Align(
       alignment: Alignment.centerLeft,
       child: Container(
-        padding: const EdgeInsets.only(top: 10, left: 16, right: 8),
+        padding: const EdgeInsets.only(top: 16, left: 20, right: 20),
         child: Text(
           prompt,
           style: const TextStyle(
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF4B4B4B),
+            fontSize: 24,
+            fontWeight: FontWeight.w700,
+            color: Color(0xFF1A1A1A),
+            letterSpacing: -0.3,
+            height: 1.3,
           ),
         ),
       ),
@@ -181,11 +207,12 @@ class QuestionRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(left: 15, bottom: 5),
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           SpeakButton(sentence: question?.sentence ?? "--"),
-          const Padding(padding: EdgeInsets.only(right: 15)),
+          const SizedBox(width: 14),
           Flexible(
             child: question?.sentenceIsTargetLanguage ?? false
                 ? RichText(
@@ -196,12 +223,13 @@ class QuestionRow extends StatelessWidget {
                 : Text(
                     question?.sentence ?? "--",
                     style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF4B4B4B)),
+                      fontSize: 19,
+                      fontWeight: FontWeight.w600,
+                      color: Color(0xFF2C2C2C),
+                      height: 1.4,
+                    ),
                   ),
           ),
-          const SizedBox(width: 16),
         ],
       ),
     );
@@ -222,17 +250,18 @@ class QuestionRow extends StatelessWidget {
               child: Text(
                 word,
                 style: const TextStyle(
-                  fontSize: 22,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF4B4B4B),
+                  fontSize: 19,
+                  fontWeight: FontWeight.w600,
+                  color: Color(0xFF2C2C2C),
                   decoration: TextDecoration.underline,
                   decorationStyle: TextDecorationStyle.dotted,
+                  decorationColor: Color(0xFF9CA3AF),
                 ),
               ),
             ),
           ),
           const TextSpan(
-            text: ' ', // Add a space between words
+            text: ' ',
           ),
         ],
       );
@@ -255,32 +284,60 @@ class ListChoice extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final lessonState = context.watch<LessonProvider>();
-    Color? borderColor;
+    
+    Color borderColor;
+    Color backgroundColor;
+    Color textColor = const Color(0xFF3C3C3C);
+    
     if (lessonState.answerState.isCorrect && isSelected) {
-      borderColor = Colors.green;
+      borderColor = const Color(0xFF58A700);
+      backgroundColor = const Color(0xFFE8F5E9);
+      textColor = const Color(0xFF2E7D32);
     } else if (lessonState.answerState == AnswerState.incorrect && isSelected) {
-      borderColor = Colors.red;
+      borderColor = const Color(0xFFE53935);
+      backgroundColor = const Color(0xFFFFEBEE);
+      textColor = const Color(0xFFC62828);
     } else if (lessonState.answerState == AnswerState.selected && isSelected) {
-      borderColor = Colors.blue;
+      borderColor = const Color(0xFF1F727E);
+      backgroundColor = const Color(0xFFF0FAFA);
+      textColor = const Color(0xFF1F727E);
     } else {
-      borderColor = const Color(0xFFE5E5E5);
+      borderColor = const Color(0xFFE0E0E0);
+      backgroundColor = Colors.white;
     }
+    
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Container(
+      padding: const EdgeInsets.symmetric(vertical: 5.0),
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 150),
         width: double.infinity,
-        margin: const EdgeInsets.only(left: 15, right: 15),
-        padding: const EdgeInsets.all(15),
+        margin: const EdgeInsets.symmetric(horizontal: 20),
+        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(15),
+          color: backgroundColor,
+          borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            width: 2.5,
+            width: isSelected ? 2.0 : 1.5,
             color: borderColor,
           ),
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: borderColor.withOpacity(0.15),
+                    blurRadius: 8,
+                    offset: const Offset(0, 2),
+                  ),
+                ]
+              : null,
         ),
         child: Text(
           title,
-          style: const TextStyle(fontSize: 17),
+          style: TextStyle(
+            fontSize: 16,
+            fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+            color: textColor,
+            letterSpacing: 0.1,
+          ),
         ),
       ),
     );
@@ -293,18 +350,19 @@ class SpeakButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: () => getIt<FlutterTts>().speak(sentence),
-      child: Container(
-        padding: const EdgeInsets.all(5),
-        decoration: BoxDecoration(
-          color: const Color(0xFF1CB0F6),
-          borderRadius: BorderRadius.circular(10),
-        ),
-        child: const Icon(
-          Icons.volume_up,
-          color: Colors.white,
-          size: 35,
+    return Material(
+      color: const Color(0xFF1F727E),
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: () => getIt<FlutterTts>().speak(sentence),
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          padding: const EdgeInsets.all(10),
+          child: const Icon(
+            Icons.volume_up_rounded,
+            color: Colors.white,
+            size: 28,
+          ),
         ),
       ),
     );

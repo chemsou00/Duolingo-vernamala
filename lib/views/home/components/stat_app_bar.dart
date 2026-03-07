@@ -19,14 +19,15 @@ class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
   const StatAppBar({Key? key}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(65);
+  Size get preferredSize => const Size.fromHeight(60);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      toolbarHeight: 120,
+      toolbarHeight: 60,
       backgroundColor: Colors.white,
-      elevation: 1.5,
+      elevation: 0,
+      surfaceTintColor: Colors.transparent,
       leading: const LanguageSelector(),
       title: const Row(
         children: [
@@ -39,6 +40,10 @@ class StatAppBar extends StatelessWidget implements PreferredSizeWidget {
       actions: const [
         InfinityHeart(),
       ],
+      bottom: PreferredSize(
+        preferredSize: const Size.fromHeight(1),
+        child: Divider(height: 1, thickness: 1, color: Color(0xFFEEEEEE)),
+      ),
     );
   }
 }
@@ -73,8 +78,9 @@ class Streak extends StatelessWidget {
               duration: const Duration(milliseconds: 1000),
               separator: ',',
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFFFC800),
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xFFFF9500),
               ),
             );
           },
@@ -113,8 +119,9 @@ class ScoreCard extends StatelessWidget {
               duration: const Duration(milliseconds: 1000),
               separator: ',',
               style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Color(0xFFFFC800),
+                fontWeight: FontWeight.w700,
+                fontSize: 15,
+                color: Color(0xFFFFD700),
               ),
             );
           },

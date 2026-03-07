@@ -8,9 +8,13 @@ import 'package:words625/application/game_provider.dart';
 import 'package:words625/application/language_provider.dart';
 import 'package:words625/application/level_provider.dart';
 import 'package:words625/application/match_provider.dart';
+import 'package:words625/application/theme_provider.dart';
 import 'package:words625/di/injection.dart';
 
 final providers = [
+  ChangeNotifierProvider<ThemeProvider>(
+    create: (_) => ThemeProvider(),
+  ),
   ChangeNotifierProvider<LessonProvider>(
     create: (_) => getIt<LessonProvider>(),
   ),

@@ -12,31 +12,32 @@ class LessonAppBar extends StatelessWidget implements PreferredSizeWidget {
   const LessonAppBar({Key? key}) : super(key: key);
 
   @override
-  Size get preferredSize => const Size.fromHeight(50);
+  Size get preferredSize => const Size.fromHeight(56);
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      shadowColor: Colors.transparent,
-      backgroundColor: Colors.transparent,
+      elevation: 0,
+      backgroundColor: Colors.white,
+      surfaceTintColor: Colors.transparent,
       title: LinearPercentIndicator(
         width: MediaQuery.of(context).size.width - 100,
         animation: true,
-        lineHeight: 16.0,
-        animationDuration: 0,
+        lineHeight: 12.0,
+        animationDuration: 200,
         percent: context.watch<LessonProvider>().percent,
-        barRadius: const Radius.circular(10),
-        backgroundColor: const Color(0xFFE5E5E5),
-        progressColor: const Color(0xFF58CC02),
+        barRadius: const Radius.circular(6),
+        backgroundColor: const Color(0xFFE5E7EB),
+        progressColor: const Color(0xFF1F727E),
       ),
       centerTitle: true,
       leading: Padding(
-        padding: const EdgeInsets.only(left: 15),
+        padding: const EdgeInsets.only(left: 8),
         child: IconButton(
           icon: const Icon(
-            Icons.close,
-            color: Color(0xFFAFAFAF),
-            size: 32,
+            Icons.close_rounded,
+            color: Color(0xFF9CA3AF),
+            size: 28,
           ),
           onPressed: () {
             context.read<LessonProvider>().reset();

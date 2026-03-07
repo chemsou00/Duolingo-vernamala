@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter_tts/flutter_tts.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 // Project imports:
 import 'package:words625/di/injection.dart';
@@ -27,6 +28,8 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await GoogleSignIn.instance.initialize();
 
   if (!kIsWeb) {
     await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);

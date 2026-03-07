@@ -71,20 +71,15 @@ class _GetStartedButtonState extends State<GetStartedButton> {
     try {
       checkAuthState(AuthState.loading);
 
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+      final GoogleSignIn signIn = GoogleSignIn.instance;
 
-      GoogleSignInAccount? googleUser = await googleSignIn.signIn();
+      // authenticate() throws GoogleSignInException on failure/cancellation
+      final GoogleSignInAccount googleUser = await signIn.authenticate();
 
-      if (googleUser == null) {
-        logger.w('Google Sign In aborted by user');
-        return; // Exit if user canceled the login
-      }
-
-      GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.credential(
         idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
       );
 
       UserCredential userCredential =
@@ -103,9 +98,13 @@ class _GetStartedButtonState extends State<GetStartedButton> {
       } else {
         logger.w('Firebase user is null after Google Sign In');
       }
+    } on GoogleSignInException catch (e) {
+      logger.w('Google Sign In cancelled or failed: ${e.code}');
+      checkAuthState(AuthState.unauthenticated);
     } catch (e, stackTrace) {
       logger.e('Google Sign In Error: $e');
       logger.e('Google Sign In Stack Trace: $stackTrace');
+      checkAuthState(AuthState.unauthenticated);
     }
   }
 

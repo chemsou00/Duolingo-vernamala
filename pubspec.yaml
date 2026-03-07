@@ -44,8 +44,8 @@ dev_dependencies:
   auto_route_generator: any
   build_runner: any
   flutter_animate: any
-  flutter_gen: any
-  flutter_gen_runner: any
+  flutter_gen: 5.8.0
+  flutter_gen_runner: 5.8.0
   flutter_lints: '^2.0.0'
   flutter_test: 
     sdk: flutter

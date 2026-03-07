@@ -1,7 +1,7 @@
 # Varnamala: Reclaiming Language Learning 🦚
 
-![Flutter](https://img.shields.io/badge/Flutter-3.22.0-blue?logo=flutter)
-![Dart SDK](https://img.shields.io/badge/Dart%20SDK-3.3.4-blue?logo=dart)
+![Flutter](https://img.shields.io/badge/Flutter-3.38.6-blue?logo=flutter)
+![Dart SDK](https://img.shields.io/badge/Dart%20SDK-3.10.7-blue?logo=dart)
 [![Support on Patreon](https://img.shields.io/badge/Support-Patreon-F96854?logo=patreon)](https://www.patreon.com/your-patreon-link)
 [![Join our Discord](https://img.shields.io/discord/your_discord_server_id.svg?label=Join%20Community&logo=discord)](https://discord.gg/eVpmZp4Ktt)
 

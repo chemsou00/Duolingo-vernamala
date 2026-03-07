@@ -24,6 +24,49 @@ class LangChoicePage extends StatefulWidget {
 }
 
 class _LangChoicePageState extends State<LangChoicePage> {
+  final List<Map<String, dynamic>> _languages = [
+    {
+      'language': TargetLanguage.kannada,
+      'flag': Assets.images.karnatakaFlag.path,
+      'script': 'ಕನ್ನಡ',
+    },
+    {
+      'language': TargetLanguage.tamil,
+      'flag': Assets.images.tamilNaduFlag.path,
+      'script': 'தமிழ்',
+    },
+    {
+      'language': TargetLanguage.telugu,
+      'flag': Assets.images.telenganaFlag.path,
+      'script': 'తెలుగు',
+    },
+    {
+      'language': TargetLanguage.malayalam,
+      'flag': Assets.images.malayalamFlag.path,
+      'script': 'മലയാളം',
+    },
+    {
+      'language': TargetLanguage.hindi,
+      'flag': Assets.images.book.path,
+      'script': 'हिन्दी',
+    },
+    {
+      'language': TargetLanguage.bengali,
+      'flag': Assets.images.book.path,
+      'script': 'বাংলা',
+    },
+    {
+      'language': TargetLanguage.odia,
+      'flag': Assets.images.book.path,
+      'script': 'ଓଡ଼ିଆ',
+    },
+    {
+      'language': TargetLanguage.nepali,
+      'flag': Assets.images.book.path,
+      'script': 'नेपाली',
+    },
+  ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +85,7 @@ class _LangChoicePageState extends State<LangChoicePage> {
                 ),
               ),
             ),
-            const Padding(padding: EdgeInsets.all(5)),
+            const SizedBox(height: 10),
             const Align(
               alignment: Alignment.topLeft,
               child: Text(
@@ -53,56 +96,27 @@ class _LangChoicePageState extends State<LangChoicePage> {
                 ),
               ),
             ),
-            const Padding(padding: EdgeInsets.all(7)),
+            const SizedBox(height: 14),
             Expanded(
-              child: ListView(
-                children: [
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.kannada,
-                    flagAsset: Assets.images.karnatakaFlag.path,
-                    languageScript: 'ಕನ್ನಡ',
-                  ),
-                  // write the next 3
-
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.tamil,
-                    flagAsset: Assets.images.tamilNaduFlag.path,
-                    languageScript: 'தமிழ்',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.telugu,
-                    flagAsset: Assets.images.telenganaFlag.path,
-                    languageScript: 'తెలుగు',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.malayalam,
-                    flagAsset: Assets.images.malayalamFlag.path,
-                    languageScript: 'മലയാളം',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.hindi,
-                    flagAsset: Assets.images.book.path,
-                    languageScript: 'हिन्दी',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.bengali,
-                    flagAsset: Assets.images.book.path,
-                    languageScript: 'বাংলা',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.odia,
-                    flagAsset: Assets.images.book.path,
-                    languageScript: 'ଓଡ଼ିଆ',
-                  ),
-                  LanguageOptionTile(
-                    targetLanguage: TargetLanguage.nepali,
-                    flagAsset: Assets.images.book.path,
-                    languageScript: 'नेपाली',
-                  ),
-                ],
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10,
+                  mainAxisSpacing: 10,
+                  childAspectRatio: 1.2,
+                ),
+                itemCount: _languages.length,
+                itemBuilder: (context, index) {
+                  final lang = _languages[index];
+                  return LanguageOptionTile(
+                    targetLanguage: lang['language'] as TargetLanguage,
+                    flagAsset: lang['flag'] as String,
+                    languageScript: lang['script'] as String,
+                  );
+                },
               ),
             ),
-            const Padding(padding: EdgeInsets.all(7)),
+            const SizedBox(height: 14),
             Align(
               alignment: Alignment.bottomCenter,
               child: ContinueButton(context),
@@ -134,30 +148,49 @@ class LanguageOptionTile extends StatelessWidget {
         onTap: () {
           languageState.setLanguage(targetLanguage);
         },
-        child: Card(
-          elevation: isSelected ? 1.5 : 0.5,
-          child: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(
-                color: isSelected ? Colors.green : const Color(0xFFE5E5E5),
-                width: 2,
-              ),
+        child: Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isSelected ? Colors.green : const Color(0xFFE5E5E5),
+              width: isSelected ? 3 : 2,
             ),
-            child: ListTile(
-              leading: Image.asset(
+            boxShadow: [
+              if (isSelected)
+                const BoxShadow(
+                  color: Colors.greenAccent,
+                  blurRadius: 8,
+                  offset: Offset(0, 2),
+                ),
+            ],
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Image.asset(
                 flagAsset,
-                width: 40,
-                height: 20,
+                width: 60,
+                height: 40,
+                fit: BoxFit.contain,
               ),
-              title: Text(
+              const SizedBox(height: 12),
+              Text(
                 targetLanguage.name.toTitleCase,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
               ),
-              subtitle: Text(
+              const SizedBox(height: 4),
+              Text(
                 languageScript,
+                style: const TextStyle(
+                  color: Colors.grey,
+                  fontSize: 14,
+                ),
               ),
-            ),
+            ],
           ),
         ),
       );

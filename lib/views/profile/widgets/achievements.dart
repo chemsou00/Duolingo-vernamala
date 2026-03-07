@@ -1,98 +1,188 @@
 // Flutter imports:
 import 'package:flutter/material.dart';
 
+// Package imports:
+import 'package:provider/provider.dart';
+
 // Project imports:
+import 'package:words625/application/achievements_provider.dart';
+import 'package:words625/application/game_provider.dart';
+import 'package:words625/domain/achievement.dart';
 import 'package:words625/views/theme.dart';
 
-class Achievements extends StatelessWidget {
+class Achievements extends StatefulWidget {
   const Achievements({Key? key}) : super(key: key);
 
   @override
+  State<Achievements> createState() => _AchievementsState();
+}
+
+class _AchievementsState extends State<Achievements> {
+  bool _expanded = false;
+
+  @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _sectionTitle(context, 'Achievements', Icons.military_tech_rounded),
-          const SizedBox(height: 8),
-          Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(VarnamalaTheme.radiusLarge),
-              border: Border.all(color: const Color(0xFFEEF2F1)),
-            ),
-            child: Column(
-              children: [
-                const _AchievementTile(
-                  icon: Icons.auto_stories_rounded,
-                  iconColor: Color(0xFF42A5F5),
-                  label: 'Scholar',
-                  description: 'Learn 1,000 new words',
-                  current: 34,
-                  target: 50,
-                  level: 9,
+    final achievements = AchievementsProvider.allAchievements;
+    final gameProvider = Provider.of<GameProvider>(context, listen: false);
+
+    return StreamBuilder<Map<String, dynamic>>(
+      stream: gameProvider.getUserGameStateStream(),
+      builder: (context, snapshot) {
+        final userData = snapshot.data ?? {};
+
+        final displayedAchievements =
+            _expanded ? achievements : achievements.take(3).toList();
+        final remainingCount = achievements.length - displayedAchievements.length;
+
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _sectionTitle(
+                  context, 'Achievements', Icons.military_tech_rounded),
+              const SizedBox(height: 8),
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius:
+                      BorderRadius.circular(VarnamalaTheme.radiusLarge),
+                  border: Border.all(color: const Color(0xFFEEF2F1)),
                 ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                const _AchievementTile(
-                  icon: Icons.psychology_rounded,
-                  iconColor: Color(0xFF66BB6A),
-                  label: 'Sage',
-                  description: 'Learn 1,000 new words in a single course',
-                  current: 50,
-                  target: 100,
-                  level: 1,
-                ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                const _AchievementTile(
-                  icon: Icons.workspace_premium_rounded,
-                  iconColor: Color(0xFFAB47BC),
-                  label: 'Champion',
-                  description: 'Complete 200 lessons',
-                  current: 150,
-                  target: 200,
-                  level: 2,
-                ),
-                const Divider(height: 1, indent: 16, endIndent: 16),
-                Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {},
-                    borderRadius: const BorderRadius.only(
-                      bottomLeft:
-                          Radius.circular(VarnamalaTheme.radiusLarge),
-                      bottomRight:
-                          Radius.circular(VarnamalaTheme.radiusLarge),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 14),
-                      child: Row(
+                child: Column(
+                  children: [
+                    ...displayedAchievements.map((achievement) {
+                      final progress = _getProgress(achievement, userData);
+                      final currentLevel = achievement.getCurrentLevel(progress);
+                      final nextTarget = achievement.getTargetForLevel(currentLevel);
+                      
+                      return Column(
                         children: [
-                          Text(
-                            'View 7 more',
-                            style: Theme.of(context)
-                                .textTheme
-                                .titleSmall
-                                ?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: VarnamalaTheme.peacockTeal,
-                                ),
+                          _AchievementTile(
+                            icon: achievement.icon,
+                            iconColor: achievement.color,
+                            label: achievement.title,
+                            description: achievement.description,
+                            current: progress,
+                            target: nextTarget,
+                            level: currentLevel,
+                            maxLevel: achievement.maxLevel,
                           ),
-                          const Spacer(),
-                          const Icon(Icons.chevron_right_rounded,
-                              color: VarnamalaTheme.peacockTeal, size: 22),
+                          if (achievement != displayedAchievements.last ||
+                              (!_expanded && remainingCount > 0))
+                            const Divider(
+                                height: 1, indent: 16, endIndent: 16),
                         ],
+                      );
+                    }),
+                    if (!_expanded && remainingCount > 0)
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _expanded = true;
+                            });
+                          },
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft:
+                                Radius.circular(VarnamalaTheme.radiusLarge),
+                            bottomRight:
+                                Radius.circular(VarnamalaTheme.radiusLarge),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'View $remainingCount more',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: VarnamalaTheme.peacockTeal,
+                                      ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.chevron_right_rounded,
+                                    color: VarnamalaTheme.peacockTeal, size: 22),
+                              ],
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
-                  ),
+                      if(_expanded)
+                       Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            setState(() {
+                              _expanded = false;
+                            });
+                          },
+                          borderRadius: const BorderRadius.only(
+                            bottomLeft:
+                                Radius.circular(VarnamalaTheme.radiusLarge),
+                            bottomRight:
+                                Radius.circular(VarnamalaTheme.radiusLarge),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 14),
+                            child: Row(
+                              children: [
+                                Text(
+                                  'Show less',
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .titleSmall
+                                      ?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                        color: VarnamalaTheme.peacockTeal,
+                                      ),
+                                ),
+                                const Spacer(),
+                                const Icon(Icons.expand_less_rounded,
+                                    color: VarnamalaTheme.peacockTeal, size: 22),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
+  }
+
+  int _getProgress(Achievement achievement, Map<String, dynamic> data) {
+    switch (achievement.type) {
+      case AchievementType.scholar:
+        // Words learned
+        return (data['wordsLearned'] as num?)?.toInt() ?? 0;
+      case AchievementType.sage:
+        // XP
+        return (data['score'] as num?)?.toInt() ?? 0;
+      case AchievementType.wildfire:
+        // Streak
+        return (data['streak'] as num?)?.toInt() ?? 0;
+      case AchievementType.champion:
+        // Lessons
+        return (data['lessonsCompleted'] as num?)?.toInt() ?? 0;
+      case AchievementType.sharpshooter:
+        // Perfect lessons
+        return (data['perfectLessons'] as num?)?.toInt() ?? 0;
+      case AchievementType.streak: // Friendly map
+         return (data['friendsCount'] as num?)?.toInt() ?? 0;
+      default:
+        return 0;
+    }
   }
 
   Widget _sectionTitle(BuildContext context, String text, IconData icon) {
@@ -122,6 +212,7 @@ class _AchievementTile extends StatelessWidget {
   final int current;
   final int target;
   final int level;
+  final int maxLevel;
 
   const _AchievementTile({
     required this.icon,
@@ -131,10 +222,14 @@ class _AchievementTile extends StatelessWidget {
     required this.current,
     required this.target,
     required this.level,
+    required this.maxLevel,
   });
 
   @override
   Widget build(BuildContext context) {
+    bool isCompleted = level > maxLevel;
+    int displayTarget = isCompleted ? current : target; 
+    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       child: Row(
@@ -151,14 +246,15 @@ class _AchievementTile extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Icon(icon, color: iconColor, size: 24),
-                Text(
-                  'Lv.$level',
-                  style: TextStyle(
-                    fontSize: 9,
-                    fontWeight: FontWeight.w700,
-                    color: iconColor,
+                if (!isCompleted)
+                  Text(
+                    'Lv.$level',
+                    style: TextStyle(
+                      fontSize: 9,
+                      fontWeight: FontWeight.w700,
+                      color: iconColor,
+                    ),
                   ),
-                ),
               ],
             ),
           ),
@@ -190,7 +286,7 @@ class _AchievementTile extends StatelessWidget {
                         borderRadius: BorderRadius.circular(
                             VarnamalaTheme.radiusRound),
                         child: LinearProgressIndicator(
-                          value: current / target,
+                          value: displayTarget > 0 ? (current / displayTarget).clamp(0.0, 1.0) : 0,
                           minHeight: 8,
                           backgroundColor: const Color(0xFFEEF2F1),
                           valueColor: const AlwaysStoppedAnimation<Color>(
@@ -200,7 +296,7 @@ class _AchievementTile extends StatelessWidget {
                     ),
                     const SizedBox(width: 10),
                     Text(
-                      '$current/$target',
+                      '$current/$displayTarget',
                       style:
                           Theme.of(context).textTheme.bodySmall?.copyWith(
                                 color: VarnamalaTheme.textHint,

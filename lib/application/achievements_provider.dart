@@ -15,25 +15,68 @@ class AchievementsProvider extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   static const List<Achievement> allAchievements = [
-    Achievement(id: 'first_lesson', title: 'First Steps', description: 'Complete your first lesson', gems: 10),
-    Achievement(id: 'lessons_10', title: 'Getting Started', description: 'Complete 10 lessons', gems: 25),
-    Achievement(id: 'lessons_50', title: 'Dedicated Learner', description: 'Complete 50 lessons', gems: 50),
-    Achievement(id: 'lessons_100', title: 'Century', description: 'Complete 100 lessons', gems: 100),
-    Achievement(id: 'streak_3', title: 'On a Roll', description: '3-day streak', gems: 15),
-    Achievement(id: 'streak_7', title: 'Week Warrior', description: '7-day streak', gems: 50),
-    Achievement(id: 'streak_30', title: 'Monthly Master', description: '30-day streak', gems: 200),
-    Achievement(id: 'streak_100', title: 'Unstoppable', description: '100-day streak', gems: 500),
-    Achievement(id: 'streak_365', title: 'Year of Learning', description: '365-day streak', gems: 1000),
-    Achievement(id: 'xp_1000', title: 'XP Explorer', description: 'Earn 1,000 XP', gems: 25),
-    Achievement(id: 'xp_10000', title: 'XP Champion', description: 'Earn 10,000 XP', gems: 100),
-    Achievement(id: 'xp_50000', title: 'XP Legend', description: 'Earn 50,000 XP', gems: 250),
-    Achievement(id: 'perfect_1', title: 'Flawless', description: 'Complete a lesson with no mistakes', gems: 10),
-    Achievement(id: 'perfect_10', title: 'Perfectionist', description: '10 perfect lessons', gems: 50),
-    Achievement(id: 'league_silver', title: 'Rising Star', description: 'Reach Silver league', gems: 25),
-    Achievement(id: 'league_gold', title: 'Golden Touch', description: 'Reach Gold league', gems: 50),
-    Achievement(id: 'league_diamond', title: 'Diamond Elite', description: 'Reach Diamond league', gems: 200),
-    Achievement(id: 'learn_2_langs', title: 'Bilingual', description: 'Study 2 languages', gems: 50),
-    Achievement(id: 'learn_4_langs', title: 'Polyglot', description: 'Study all 4 languages', gems: 200),
+    Achievement(
+      id: 'scholar',
+      type: AchievementType.scholar,
+      title: 'Scholar',
+      description: 'Learn new words',
+      icon: Icons.auto_stories_rounded,
+      color: Color(0xFF42A5F5),
+      targets: [50, 100, 250, 500, 1000],
+    ),
+    Achievement(
+        id: 'sage',
+        type: AchievementType.sage,
+        title: 'Sage',
+        description: 'Earn XP in a single day',
+        icon: Icons.psychology_rounded,
+        color: Color(0xFF66BB6A),
+        targets: [100, 250, 500, 1000, 2000]),
+    Achievement(
+      id: 'wildfire',
+      type: AchievementType.wildfire,
+      title: 'Wildfire',
+      description: 'Reach a streak of days',
+      icon: Icons.local_fire_department_rounded,
+      color: Color(0xFFFF7043),
+      targets: [3, 7, 14, 30, 75, 125, 200, 365],
+    ),
+    Achievement(
+      id: 'champion',
+      type: AchievementType.champion,
+      title: 'Champion',
+      description: 'Complete lessons',
+      icon: Icons.workspace_premium_rounded,
+      color: Color(0xFFAB47BC),
+      targets: [10, 50, 100, 250, 500],
+    ),
+    Achievement(
+      id: 'sharpshooter',
+      type: AchievementType.sharpshooter,
+      title: 'Sharpshooter',
+      description: 'Complete lessons with no mistakes',
+      icon: Icons.track_changes_rounded,
+      color: Color(0xFFEF5350),
+      targets: [1, 5, 20, 50, 100],
+    ),
+    Achievement(
+      id: 'friendly',
+      type: AchievementType.streak, // Using streak as placeholder for friends if no friends type
+      title: 'Friendly',
+      description: 'Follow friends',
+      icon: Icons.people_rounded,
+      color: Color(0xFF26C6DA),
+      targets: [1, 5, 10, 20],
+    ),
+    Achievement(
+      id: 'winner',
+      type: AchievementType.xp, // Using xp as placeholder for league
+      title: 'Winner',
+      description: 'Finish #1 in your leaderboard',
+      icon: Icons.emoji_events_rounded,
+      color: Color(0xFFFFA726),
+      targets: [1, 5, 10, 25],
+    ),
   ];
 
   static final Map<String, Achievement> _achievementById = {
@@ -74,7 +117,9 @@ class AchievementsProvider extends ChangeNotifier {
         return false;
       }
 
-      final gems = (data['gems'] as num? ?? 0).toInt() + achievement.gems;
+      // TODO: Logic for gem rewards based on achievement tier
+      // For now using simplified flat rate or calculating based on previous logic
+      final gems = (data['gems'] as num? ?? 0).toInt() + 50; // Placeholder 50 gems
       transaction.update(docRef, {
         'achievements': unlocked.toList(growable: false),
         'gems': gems,
@@ -91,18 +136,20 @@ class AchievementsProvider extends ChangeNotifier {
     required int lessonsCompleted,
     required int perfectLessons,
   }) async {
-    if (lessonsCompleted >= 1) await checkAndUnlock('first_lesson');
-    if (lessonsCompleted >= 10) await checkAndUnlock('lessons_10');
-    if (lessonsCompleted >= 50) await checkAndUnlock('lessons_50');
-    if (lessonsCompleted >= 100) await checkAndUnlock('lessons_100');
-
-    if (perfectLessons >= 1) await checkAndUnlock('perfect_1');
-    if (perfectLessons >= 10) await checkAndUnlock('perfect_10');
+    // Check Champion (lessons)
+    final champion = _achievementById['champion'];
+    if (champion != null) {
+      if (lessonsCompleted >= 10) await checkAndUnlock('champion'); // Simplified for now
+    }
+    
+    // Check Sharpshooter (perfect lessons)
+     final sharpshooter = _achievementById['sharpshooter'];
+    if (sharpshooter != null) {
+       if (perfectLessons >= 1) await checkAndUnlock('sharpshooter');
+    }
   }
 
   Future<void> checkLeagueAchievement(String league) async {
-    if (league == 'silver') await checkAndUnlock('league_silver');
-    if (league == 'gold') await checkAndUnlock('league_gold');
-    if (league == 'diamond') await checkAndUnlock('league_diamond');
+    // Implement league checking when league achievements are fully defined
   }
 }

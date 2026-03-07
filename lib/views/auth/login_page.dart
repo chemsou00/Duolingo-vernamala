@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -6,6 +7,7 @@ import 'package:auto_route/annotations.dart';
 
 // Project imports:
 import 'package:words625/views/auth/components/components.dart';
+import 'package:words625/views/onboarding/onboarding_screen.dart';
 
 @RoutePage()
 class LoginPage extends StatefulWidget {
@@ -54,20 +56,35 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   bottomDisplay() {
-    return const Expanded(
+    return Expanded(
       child: Align(
         alignment: FractionalOffset.bottomCenter,
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            if(kDebugMode)
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                          builder: (context) => const OnboardingScreen()),
+                    );
+                  },
+                  child: const Text('Test Onboarding'),
+                ),
+              ],
+            ),
+            const Row(
               // mainAxisSize: MainAxisSize.max,
               children: [
                 FacebookButton(),
                 GoogleButton(),
               ],
             ),
-            PolicyText(),
+            const PolicyText(),
           ],
         ),
       ),

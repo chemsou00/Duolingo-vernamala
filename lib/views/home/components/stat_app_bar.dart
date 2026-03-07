@@ -147,19 +147,21 @@ class LanguageSelector extends StatelessWidget {
           onTap: () {
             context.router.push(const LangChoiceRoute());
           },
-          child: Container(
-            margin: const EdgeInsets.only(left: 12),
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(VarnamalaTheme.radiusMedium),
-              border: Border.all(
-                width: 2,
-                color: VarnamalaTheme.peacockTeal.withValues(alpha: 0.2),
-              ),
-              image: DecorationImage(
-                fit: BoxFit.cover,
-                image: AssetImage(_getFlagPath(currentLanguage)),
+          child: Center(
+            child: Container(
+              margin: const EdgeInsets.only(left: 12),
+              width: 42,
+              height: 32,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  width: 2,
+                  color: VarnamalaTheme.peacockTeal.withOpacity(0.2),
+                ),
+                image: DecorationImage(
+                  fit: BoxFit.cover,
+                  image: AssetImage(_getFlagPath(currentLanguage)),
+                ),
               ),
             ),
           ),

@@ -1,4 +1,5 @@
 // Flutter imports:
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -18,6 +19,7 @@ import 'package:words625/views/leaderboard/leaderboard_page.dart';
 import 'package:words625/views/profile/profile_screen.dart';
 import 'package:words625/views/shop/shop_screen.dart';
 import 'package:words625/views/theme.dart';
+import 'package:words625/views/onboarding/onboarding_screen.dart';
 
 @RoutePage()
 class HomePage extends StatefulWidget {
@@ -100,6 +102,19 @@ class _HomePageState extends State<HomePage> {
         duration: const Duration(milliseconds: 200),
         child: screens[currentIndex],
       ),
+      floatingActionButton: currentIndex == 0 && kDebugMode
+          ? FloatingActionButton.extended(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                      builder: (context) => const OnboardingScreen()),
+                );
+              },
+              label: const Text("Test Onboarding"),
+              icon: const Icon(Icons.start),
+              backgroundColor: VarnamalaTheme.peacockTeal,
+            )
+          : null,
     );
   }
 

@@ -23,11 +23,11 @@ class HeartsDisplay extends StatelessWidget {
 
         final heartsState =
             snapshot.data ?? const HeartsState(hearts: HeartsProvider.maxHearts, heartsRefillAt: null);
-
-        final refillLabel = _buildRefillLabel(heartsState);
+        final isInfinite = heartsState.hearts >= HeartsProvider.maxHearts &&
+            heartsState.heartsRefillAt == null;
 
         return Tooltip(
-          message: refillLabel,
+          message: isInfinite ? 'Infinite Hearts' : 'Hearts',
           triggerMode: TooltipTriggerMode.tap,
           child: Container(
             margin: const EdgeInsets.only(right: 12),
@@ -41,34 +41,27 @@ class HeartsDisplay extends StatelessWidget {
               children: [
                 const Icon(Icons.favorite_rounded, color: Color(0xFFE53935), size: 20),
                 const SizedBox(width: 4),
-                Text(
-                  '${heartsState.hearts}',
-                  style: const TextStyle(
+                if (isInfinite) ...[
+                  const Icon(
+                    Icons.all_inclusive_rounded,
                     color: Color(0xFFE53935),
-                    fontSize: 14,
-                    fontWeight: FontWeight.w700,
+                    size: 16,
                   ),
-                ),
+                ] else ...[
+                  Text(
+                    '${heartsState.hearts}',
+                    style: const TextStyle(
+                      color: Color(0xFFE53935),
+                      fontSize: 14,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
         );
       },
     );
-  }
-
-  String _buildRefillLabel(HeartsState state) {
-    if (state.hearts >= HeartsProvider.maxHearts || state.heartsRefillAt == null) {
-      return 'Hearts full';
-    }
-
-    final remaining = state.heartsRefillAt!.difference(DateTime.now());
-    if (remaining.isNegative) {
-      return 'Refilling...';
-    }
-
-    final minutes = remaining.inMinutes;
-    final seconds = remaining.inSeconds % 60;
-    return 'Next heart in ${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
   }
 }
